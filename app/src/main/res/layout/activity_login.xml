@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="30dp"
+    android:background="@color/colorPrimary"
+    tools:context=".Login">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="40dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="5dp"
+        android:src="@drawable/mylogo"
+        android:layout_marginVertical="5dp">
+    </ImageView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60dp"
+        android:fontFamily="sans-serif-thin"
+        android:text="User Login"
+        android:textColor="@color/colorWhite"
+        android:layout_marginTop="-56dp"
+        android:layout_marginBottom="5dp"
+        android:textStyle="bold"
+        android:textSize="30sp" />
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="70dp"
+        android:src="@drawable/ic_person_black_24dp"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:textColorHint="@color/colorPrimaryText"
+        >
+
+        <EditText
+            android:id="@+id/edit_usernamelogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="User Name"
+            android:fontFamily="sans-serif-thin"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:textSize="20sp"
+            tools:ignore="InvalidId" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:textColorHint="@color/colorPrimaryText"
+        app:passwordToggleEnabled="true"
+        >
+
+        <EditText
+            android:id="@+id/edit_passwordlogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:fontFamily="sans-serif-thin"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:textSize="20sp"
+
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/button_login"
+        android:layout_width="200dp"
+        android:layout_gravity="center"
+        android:layout_height="40dp"
+        android:layout_marginTop="60dp"
+        android:text=" Login "
+        android:textSize="15sp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:background="@drawable/button_rounded"
+        android:backgroundTint="@color/colorWhite"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        android:onClick="validateUserEntries"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New User? Please sign up!"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"/>
+
+    <Button
+        android:id="@+id/button_signup_login"
+        android:layout_width="200dp"
+        android:layout_gravity="center"
+        android:layout_height="40dp"
+        android:layout_marginTop="18dp"
+        android:text=" Sign up "
+        android:textSize="15sp"
+        android:fontFamily="sans-serif-smallcaps"
+        android:outlineAmbientShadowColor="@color/colorGreen"
+        android:shadowColor="@color/colorAccent"
+        android:background="@drawable/button_rounded"
+        android:backgroundTint="@color/colorWhite"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        android:onClick="btnSignUp"
+
+        />
+
+</LinearLayout>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HomeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp" >
+
+        <TextView
+            android:id="@+id/tv_userName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hello, User Name"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="30dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp" >
+
+            <ImageView
+                android:id="@+id/imageIncome"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/income"
+                android:tint="@null"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/total_income"
+                android:textStyle="bold"
+                android:textSize="17sp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/tv_totalIncome"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="€500"
+                android:textStyle="bold"
+                android:textSize="17sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp" >
+
+            <ImageView
+                android:id="@+id/imageExpense"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/addtransaction"
+                android:tint="@null"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/total_expense"
+                android:textStyle="bold"
+                android:textSize="17sp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/tv_totalExpense"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="€150"
+                android:textStyle="bold"
+                android:textSize="17sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp" >
+
+            <ImageView
+                android:id="@+id/imageBalance"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/balance"
+                android:tint="@null"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/total_balance"
+                android:textStyle="bold"
+                android:textSize="17sp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/tv_totalBalance"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="€350"
+                android:textStyle="bold"
+                android:textSize="17sp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_addIncome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="120dp"
+        android:backgroundTint="#00BCD4"
+        android:contentDescription="@string/add_incomefab"
+        android:src="@drawable/income"
+        app:fabSize="auto"
+        app:tint="@null" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_addExpense"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="45dp"
+        android:backgroundTint="#00BCD4"
+        android:contentDescription="@string/add_expense"
+        android:src="@drawable/addtransaction"
+        app:fabSize="auto"
+        app:tint="@null" />
+
+</FrameLayout>

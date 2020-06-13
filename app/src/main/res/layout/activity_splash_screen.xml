@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".SplashScreenActivity">
+
+    <ImageView
+        android:id="@+id/start_splash_cart"
+        android:layout_width="wrap_content"
+        android:layout_height="650dp"
+        android:cropToPadding="true"
+        android:layout_marginTop="40dp"
+        android:padding="10dp"
+        android:layout_marginBottom="0dp"
+        android:src="@drawable/start_splash_cart"
+
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:text=" beware of little expenses ! "
+        android:fontFamily="cursive"
+        android:textColor="@color/colorcurrency"
+        android:shadowColor="@color/colorPrimary"
+        android:outlineSpotShadowColor="@color/colorPrimary"
+        android:textStyle="bold"
+        android:textSize="30dp"
+        android:layout_marginBottom="20dp"
+
+
+
+
+        />
+
+</RelativeLayout>
