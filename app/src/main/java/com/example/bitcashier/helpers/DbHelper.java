@@ -189,11 +189,11 @@ public class DbHelper extends SQLiteOpenHelper {
     @SuppressLint("Recycle")
     public ArrayList<Expense> loadExpenseData(String userName, String category, String payment, String fromDate, String toDate) {
 
-        String getExpensesQuery = "SELECT * FROM " + Expense.EXPENSE_TABLE;
+        String getExpensesQuery = "SELECT * FROM " + Expense.EXPENSE_TABLE + " WHERE "+ Expense.USER_NAME +"='"+ userName +"'";
 
         if(!category.isEmpty() || !payment.isEmpty() || !fromDate.isEmpty()) {
             // Add the where clause
-            getExpensesQuery += " WHERE "+ Expense.USER_NAME +"= '"+ userName +"' AND ";
+            getExpensesQuery += " AND ";
 
             // Select * from expenses where category='Shopping'
             if(!category.isEmpty()) {
@@ -211,7 +211,7 @@ public class DbHelper extends SQLiteOpenHelper {
             // Select * from expenses where category='Shopping' and payment_type='Cash' and date(date) between '2020-05-01' and '2020-05-10'
             if(!fromDate.isEmpty() && !toDate.isEmpty()) {
                 if(!category.isEmpty() || !payment.isEmpty()) {
-                    getExpensesQuery += " and ";
+                    getExpensesQuery += " AND ";
                 }
                 getExpensesQuery += " date(date) BETWEEN '" + fromDate + "' AND '" + toDate + "'";
             }

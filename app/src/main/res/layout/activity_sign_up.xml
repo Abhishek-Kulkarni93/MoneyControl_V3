@@ -114,8 +114,27 @@
             android:inputType="textVisiblePassword"
             android:textSize="20sp"
             />
+
     </com.google.android.material.textfield.TextInputLayout>
-    
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="8dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:background="@color/colorWhite"
+        >
+
+        <Spinner
+            android:id="@+id/spinner_currency"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="5dp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
     <Button
         android:id="@+id/btn_register_signup"
         android:layout_width="match_parent"

@@ -2,6 +2,7 @@ package com.example.bitcashier.helpers;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,14 +46,18 @@ public class ExpenseArrayAdapter extends ArrayAdapter<Expense> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         View expenseItemCardView = inflater.inflate(R.layout.card_view_row_item, null);
         String appPackageName = context.getPackageName();
+        SharedPreferences preferences = context.getSharedPreferences(appPackageName+"_preferences", 0);
+        Log.i(TAG, "getView: symbol: " + preferences.getString("currencysymbol", null));
+        String username = preferences.getString("authusername", null);
+        String currencySymbol = preferences.getString(username+"-currencysymbol", "€");
 
-        TextView tvExpenseTitle = (TextView) expenseItemCardView.findViewById(R.id.tv_title);
-        TextView tvExpenseAmount = (TextView) expenseItemCardView.findViewById(R.id.tv_amount);
-        TextView tvExpenseDate = (TextView) expenseItemCardView.findViewById(R.id.tv_date);
-        ImageView ivExpenseCategory = (ImageView) expenseItemCardView.findViewById(R.id.img_category);
+        TextView tvExpenseTitle = expenseItemCardView.findViewById(R.id.tv_title);
+        TextView tvExpenseAmount = expenseItemCardView.findViewById(R.id.tv_amount);
+        TextView tvExpenseDate = expenseItemCardView.findViewById(R.id.tv_date);
+        ImageView ivExpenseCategory = expenseItemCardView.findViewById(R.id.img_category);
 
         tvExpenseTitle.setText(expense.getTitle());
-        tvExpenseAmount.setText("€"+ expense.getAmount());
+        tvExpenseAmount.setText(currencySymbol+ expense.getAmount());
         tvExpenseDate.setText(expense.getDateInDisplayFormat());
 
         int categoryImageId = context.getResources()

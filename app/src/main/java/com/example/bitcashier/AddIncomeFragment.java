@@ -176,23 +176,27 @@ public class AddIncomeFragment extends Fragment {
         if(!amountString.isEmpty() && !date.isEmpty()) {
             try {
                 amount = Double.parseDouble(amountString);
-                Income newUserIncome = new Income(amount, selectedDate, notes, authUser.getUsername());
-                boolean isInserted =  expenseDB.insertUserIncome(newUserIncome);
-                if(isInserted) {
-                    Toast.makeText(view.getContext(),
-                            "Income added successfully",
-                            Toast.LENGTH_LONG).show();
+                if(amount < 100000) {
+                    Income newUserIncome = new Income(amount, selectedDate, notes, authUser.getUsername());
+                    boolean isInserted =  expenseDB.insertUserIncome(newUserIncome);
+                    if(isInserted) {
+                        Toast.makeText(view.getContext(),
+                                "Income added successfully",
+                                Toast.LENGTH_LONG).show();
 
-                    HomeFragment homeFragment = new HomeFragment();
-                    FragmentManager manager = getParentFragmentManager();
-                    manager.beginTransaction()
-                            .replace(R.id.navHostFragment,homeFragment)
-                            .addToBackStack(null)
-                            .commit();
+                        HomeFragment homeFragment = new HomeFragment();
+                        FragmentManager manager = getParentFragmentManager();
+                        manager.beginTransaction()
+                                .replace(R.id.navHostFragment,homeFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    } else {
+                        Toast.makeText(view.getContext(),
+                                "Income was not added due to errors",
+                                Toast.LENGTH_LONG).show();
+                    }
                 } else {
-                    Toast.makeText(view.getContext(),
-                            "Income was not added due to errors",
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(view.getContext(),"Amount cannot be greater than 5 digits", Toast.LENGTH_LONG).show();
                 }
             } catch (NumberFormatException e) {
                 Toast.makeText(view.getContext(),"Please enter only numbers", Toast.LENGTH_LONG).show();

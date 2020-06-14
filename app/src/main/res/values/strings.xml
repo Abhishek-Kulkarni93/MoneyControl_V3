@@ -15,6 +15,18 @@
         <item>Transport</item>
         <item>Food</item>
     </string-array>
+    <string-array name="currency">
+        <item>Select a currency</item>
+        <item>EUR (€) - European Euro</item>
+        <item>USD ($) - United States Dollars</item>
+        <item>GBP (£) - Great Britain Pound</item>
+        <item>INR (₹) - Indian Rupees</item>
+        <item>YEN (¥) - Japanese Yen</item>
+        <item>SGD ($) - Singapore Dollars</item>
+        <item>AUD ($) - Australian Dollars</item>
+        <item>CHF (₣) - Swiss Franc</item>
+        <item>CAD ($) - Canadian Dollars</item>
+    </string-array>
     <string-array name="payment_type">
         <item>Select a payment type</item>
         <item>Cash</item>

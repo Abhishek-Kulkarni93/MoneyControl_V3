@@ -24,6 +24,7 @@ public class HomeFragment extends Fragment {
 
     FloatingActionButton fabAddExpense, fabAddIncome;;
     TextView tvUserName, tvTotalIncome, tvTotalExpense, tvTotalBalance;
+    String userCurrencySymbol = "";
 
     public HomeFragment() {
         // Required empty public constructor
@@ -54,9 +55,9 @@ public class HomeFragment extends Fragment {
             userTotalBalance = userTotalIncome - userTotalExpense;
         }
 
-        tvTotalIncome.setText("€" + userTotalIncome);
-        tvTotalExpense.setText("€" + userTotalExpense);
-        tvTotalBalance.setText("€" + userTotalBalance);
+        tvTotalIncome.setText(userCurrencySymbol + userTotalIncome);
+        tvTotalExpense.setText(userCurrencySymbol + userTotalExpense);
+        tvTotalBalance.setText(userCurrencySymbol + userTotalBalance);
 
         fabAddIncome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +98,8 @@ public class HomeFragment extends Fragment {
 
     private User getAuthorizedUser() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String username = settings.getString("authusername", null);
+        userCurrencySymbol = settings.getString(username+"-currencysymbol", "€");
         return new User(
                 settings.getString("authusername", null),
                 settings.getString("authuserfullname", null));

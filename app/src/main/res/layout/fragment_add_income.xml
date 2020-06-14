@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:ems="10"
-            android:hint="Income Amount"
+            android:hint="Income Amount (max 5 digits)"
             android:inputType="numberSigned|number|numberDecimal"
             android:text="" />
 
@@ -50,8 +50,9 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:ems="10"
-            android:hint="Income Notes"
+            android:hint="Notes (max 100 characters)"
             android:inputType="textPersonName"
+            android:maxLength="100"
             android:text="" />
 
         <Button
