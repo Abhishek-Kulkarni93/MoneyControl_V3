@@ -38,7 +38,8 @@ public class ExpenseArrayAdapter extends ArrayAdapter<Expense> {
 
         //get the expense we are displaying
         Expense expense = expenseArrayList.get(position);
-        Category categoryObj = new Category();
+        DbHelper expenseDB = new DbHelper(context);
+        Category xpCategoryData = expenseDB.getSingleCategory(expense.getCategory());
 
         //get the inflater and inflate the XML layout for each item
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -54,12 +55,10 @@ public class ExpenseArrayAdapter extends ArrayAdapter<Expense> {
         tvExpenseAmount.setText("€"+ expense.getAmount());
         tvExpenseDate.setText(expense.getDateInDisplayFormat());
 
-        String category = expense.getCategory(); // Rent
-        String categoryImageName = categoryObj.getCategoryImageForCardView(category); // cv_rent
-        int imgId = context.getResources()
-                .getIdentifier(appPackageName+":drawable/"+categoryImageName , null, null);
-        Log.i(TAG, "IMG ID :: "+imgId);
-        Log.i(TAG, "PACKAGE_NAME :: "+appPackageName);
+        int categoryImageId = context.getResources()
+                .getIdentifier(appPackageName+":drawable/"+xpCategoryData.getCategory_image() , null, null);
+
+        ivExpenseCategory.setImageResource(categoryImageId);
 
         return expenseItemCardView;
     }

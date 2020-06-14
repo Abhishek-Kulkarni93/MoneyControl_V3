@@ -1,7 +1,5 @@
 package com.example.bitcashier.models;
 
-import java.util.HashMap;
-
 public class Category {
 
     public static final String CATEGORY_TABLE = "categories";
@@ -13,8 +11,9 @@ public class Category {
     public static final String CREATE_CATEGORY_TABLE = "CREATE TABLE IF NOT EXISTS " + CATEGORY_TABLE + " (" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + CATEGORY_NAME + " TEXT NOT NULL,"+ CATEGORY_ICON +" TEXT,"+ CATEGORY_IMAGE +" TEXT)";
 
     public static final String CATEGORY_COUNT_QUERY = "SELECT COUNT(*) FROM " + CATEGORY_TABLE;
-    public static final String GET_ALL_CATEGORIES_QUERY = "SELECT "+ CATEGORY_NAME +" FROM " + CATEGORY_TABLE;
+    public static final String GET_ALL_CATEGORIES_QUERY = "SELECT * FROM " + CATEGORY_TABLE;
     public static final String CHECK_CATEGORY_EXISTS_QUERY = CATEGORY_COUNT_QUERY + " WHERE " + CATEGORY_NAME + "= ? COLLATE NOCASE";
+    public static final String GET_CATEGORY_BY_NAME_QUERY = "SELECT * FROM " + CATEGORY_TABLE + " WHERE " + CATEGORY_NAME + "= ? COLLATE NOCASE";
 
     private int id;
     private String category_name;
@@ -26,8 +25,18 @@ public class Category {
         // Empty constructor..
     }
 
+    // Default Category Icon & Image Constructor
     public Category(String name) {
+        this.id = 0;
         this.category_name = name;
+        this.category_icon = "ic_others";
+        this.category_image = "cv_others";
+    }
+
+    public Category(String name, String icon, String image) {
+        this.category_name = name;
+        this.category_icon = icon;
+        this.category_image = image;
     }
 
     public int getId() {

@@ -19,9 +19,18 @@ import java.util.ArrayList;
 public class CategoryAdapter extends ArrayAdapter<CategoryItem> {
 
     private static final String TAG = "CategoryAdapter";
+    ArrayList<CategoryItem> categoryItemList;
 
     public CategoryAdapter(@NonNull Context context, ArrayList<CategoryItem> customList) {
         super(context, 0, customList);
+
+        this.categoryItemList = customList;
+    }
+
+    @Override
+    public int getPosition(@Nullable CategoryItem item) {
+//        return super.getPosition(item);
+        return categoryItemList.indexOf(item);
     }
 
     @NonNull

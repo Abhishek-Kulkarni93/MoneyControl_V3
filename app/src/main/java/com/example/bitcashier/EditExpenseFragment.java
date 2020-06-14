@@ -23,6 +23,8 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.bitcashier.helpers.CategoryAdapter;
+import com.example.bitcashier.helpers.CategoryItem;
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.models.Category;
@@ -41,6 +43,7 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = Expense.ID;
     private static final String ARG_PARAM2 = "REPEAT_MODE";
+    private static final String TAG = "EditExpenseFragment";
 
     // TODO: Rename and change types of parameters
     private int id;
@@ -87,7 +90,8 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
     private int mYear, mMonth, mDay;
     DateHelper dateHelper;
     Expense selectedExpense;
-    ArrayAdapter<String> categoryAdapter;
+    CategoryAdapter customCategoryAdapter;
+    String appPackageName;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -97,6 +101,9 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
 
         dateHelper = new DateHelper();
         final DbHelper expenseDB = new DbHelper(view.getContext());
+        appPackageName = view.getContext().getPackageName();
+        selectedExpense = expenseDB.getExpenseById(id);
+        ArrayList<Category> categoriesList = expenseDB.getCategories();
 
         editAmount = view.findViewById(R.id.editText_editAmount);
         editTitle = view.findViewById(R.id.editText_editTitle);
@@ -113,11 +120,16 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         editDate.setText(dateHelper.getCurrDateInDisplayFormat());
         selectedDate = dateHelper.getCurrDateInStoreFormat();
 
-        ArrayList<String> categoriesList = expenseDB.getCategories();
-        categoryAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1,
-                categoriesList);
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCategory.setAdapter(categoryAdapter);
+        ArrayList<CategoryItem> categoryItemsList = addIconsToCategoryList(view, categoriesList);
+        customCategoryAdapter = new CategoryAdapter(view.getContext(), categoryItemsList);
+        spinnerCategory.setAdapter(customCategoryAdapter);
+        selectedCategory = selectedExpense.getCategory();
+        int selectedCatIconId = view.getContext().getResources()
+                .getIdentifier(appPackageName+":drawable/ic_"+selectedCategory.toLowerCase(), null, null);
+        CategoryItem selCategoryItem = new CategoryItem(selectedCatIconId, selectedCategory);
+        Log.i(TAG, "IMG ID :: "+selectedCatIconId + " IMG NAME :: ic_"+selectedCategory.toLowerCase());
+        Log.i(TAG, "ITEM POS :: "+customCategoryAdapter.getPosition(selCategoryItem));
+        spinnerCategory.setSelection(customCategoryAdapter.getPosition(selCategoryItem), true);
         spinnerCategory.setOnItemSelectedListener(this);
 
         ArrayAdapter<CharSequence> paymentTypeAdapter = ArrayAdapter.createFromResource(view.getContext(),
@@ -126,17 +138,12 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         spinnerPaymentType.setAdapter(paymentTypeAdapter);
         spinnerPaymentType.setOnItemSelectedListener(this);
 
-        // TODO: User name to be added
-        selectedExpense = getExpenseData(view);
-
         editAmount.setText(Double.toString(selectedExpense.getAmount()));
         editTitle.setText(selectedExpense.getTitle());
         editDate.setText(selectedExpense.getDateInDisplayFormat());
         editComment.setText(selectedExpense.getNotes());
         switchRecurring.setChecked((selectedExpense.getRecurring().equals("yes")));
-        spinnerCategory.setSelection(categoryAdapter.getPosition(selectedExpense.getCategory()));
         spinnerPaymentType.setSelection(paymentTypeAdapter.getPosition(selectedExpense.getPayment_type()));
-        selectedCategory = selectedExpense.getCategory();
         selectedPaymentType = selectedExpense.getPayment_type();
         selectedDate = selectedExpense.getDate();
 
@@ -245,15 +252,29 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
             }
         });
 
+        addSelectedCategoryToSpinner(view);
+
         // Inflate the layout for this fragment
         return view;
     }
 
-    public Expense getExpenseData(View view) {
-        DbHelper expenseDB = new DbHelper(view.getContext());
+    public ArrayList<CategoryItem> addIconsToCategoryList(View view, ArrayList<Category> categories) {
+        ArrayList<CategoryItem> categoryItems = new ArrayList<>();
 
-        return expenseDB.getExpenseById(id);
+        for (int i=0; i<categories.size(); i++) {
+            Category currentCategory = categories.get(i);
+            if(!currentCategory.getCategoryName().equals(selectedCategory)) {
+                int categoryImageId = view.getContext().getResources()
+                        .getIdentifier(appPackageName+":drawable/"+currentCategory.getCategory_icon() , null, null);
+//                Log.i(TAG, "addIconsToCategoryList: categoryImageId: " + categoryImageId + " name: " + currentCategory.getCategoryName() + " icon: " + currentCategory.getCategory_icon());
+                categoryItems.add(new CategoryItem(categoryImageId, currentCategory.getCategoryName()));
+            }
+        }
+
+        return categoryItems;
     }
+
+
 
     public void setExpenseDate(View view) {
         mYear = dateHelper.getCurrYear();
@@ -284,7 +305,8 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
 
         if(id > 0) {
             if (parent.getId() == R.id.spinner_editCategory) {
-                selectedCategory = parent.getItemAtPosition(position).toString();
+                CategoryItem item = (CategoryItem) parent.getSelectedItem();
+                selectedCategory = item.getSpinnerItemName();
             } else if (parent.getId() == R.id.spinner_editPaymentType) {
                 selectedPaymentType = parent.getItemAtPosition(position).toString();
             }
@@ -303,18 +325,31 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
 
     }
 
+    public void addSelectedCategoryToSpinner(View view) {
+        int selectedCatIconId = view.getContext().getResources()
+                .getIdentifier(appPackageName+":drawable/ic_"+selectedCategory.toLowerCase() , null, null);
+        CategoryItem newCategoryItem = new CategoryItem(selectedCatIconId, selectedCategory);
+        customCategoryAdapter.add(newCategoryItem);
+        customCategoryAdapter.notifyDataSetChanged();
+        spinnerCategory.setSelection(customCategoryAdapter.getPosition(newCategoryItem));
+    }
+
     public void addNewCategory(View view, String newCategoryValue) {
         DbHelper expenseDB = new DbHelper(view.getContext());
 
         Category newCategory = new Category(newCategoryValue);
+        int categoryImageId = view.getContext().getResources()
+                .getIdentifier(appPackageName+":drawable/"+newCategory.getCategory_icon() , null, null);
+        CategoryItem newCategoryItem = new CategoryItem(categoryImageId, newCategoryValue);
         boolean isInserted =  expenseDB.insertNewCategory(newCategory);
         if(isInserted) {
             Toast.makeText(view.getContext(),
                     newCategoryValue + " category added successfully",
                     Toast.LENGTH_LONG).show();
-            categoryAdapter.add(newCategoryValue);
-            categoryAdapter.notifyDataSetChanged();
-            spinnerCategory.setSelection(categoryAdapter.getPosition(newCategoryValue));
+            customCategoryAdapter.add(newCategoryItem);
+            customCategoryAdapter.notifyDataSetChanged();
+            spinnerCategory.setSelection(customCategoryAdapter.getPosition(newCategoryItem));
+            selectedCategory = newCategoryValue;
         } else {
             Toast.makeText(view.getContext(),
                     newCategoryValue + " category was not added due to errors",
@@ -335,7 +370,6 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         if(!amountString.isEmpty() && !date.isEmpty() && !selectedCategory.isEmpty() && !selectedPaymentType.isEmpty()) {
             try {
                 amount = Double.parseDouble(amountString);
-                // TODO: User name to be added
                 Expense newExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, selectedExpense.getUserName());
                 boolean isInserted =  expenseDB.insertData(newExpense);
                 if(isInserted) {
@@ -374,14 +408,18 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         if(!amountString.isEmpty() && !date.isEmpty() && !selectedCategory.isEmpty() && !selectedPaymentType.isEmpty()) {
             try {
                 amount = Double.parseDouble(amountString);
-                Expense existingExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, selectedExpense.getUserName());
-                existingExpense.setId(id);
-                boolean isUpdated =  expenseDB.updateExpenseData(existingExpense);
-                if(isUpdated) {
-                    Toast.makeText(view.getContext(),"Expense updated successfully", Toast.LENGTH_LONG).show();
-                    returnToTransactionHistory();
+                if(amount < 100000) {
+                    Expense existingExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, selectedExpense.getUserName());
+                    existingExpense.setId(id);
+                    boolean isUpdated =  expenseDB.updateExpenseData(existingExpense);
+                    if(isUpdated) {
+                        Toast.makeText(view.getContext(),"Expense updated successfully", Toast.LENGTH_LONG).show();
+                        returnToTransactionHistory();
+                    } else {
+                        Toast.makeText(view.getContext(),"Expense was not updated due to errors", Toast.LENGTH_LONG).show();
+                    }
                 } else {
-                    Toast.makeText(view.getContext(),"Expense was not updated due to errors", Toast.LENGTH_LONG).show();
+                    Toast.makeText(view.getContext(),"Amount cannot be greater than 5 digits", Toast.LENGTH_LONG).show();
                 }
             } catch (NumberFormatException e) {
                 Toast.makeText(view.getContext(),"Please enter only numbers", Toast.LENGTH_LONG).show();

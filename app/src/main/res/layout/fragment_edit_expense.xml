@@ -14,31 +14,22 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="55dp"
             android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:layout_weight="0.25"
-                android:padding="5dp"
-                android:text="Category"
-                android:textSize="17sp" />
 
             <Spinner
                 android:id="@+id/spinner_editCategory"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:padding="5dp"
-                android:layout_weight="0.65"
+                android:layout_weight="1"
                 android:spinnerMode="dropdown" />
 
             <ImageButton
                 android:id="@+id/btn_addNewCategory"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.15"
+                android:layout_weight="0.10"
                 android:src="@drawable/ic_baseline_add_circle_24"
                 android:backgroundTint="@android:color/transparent"
                 />
@@ -50,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:ems="10"
-            android:hint="Amount Spent"
+            android:hint="Amount (max 5 digits)"
             android:inputType="numberSigned|number|numberDecimal"
             android:text="" />
 
@@ -59,8 +50,9 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:ems="10"
-            android:hint="Title"
+            android:hint="Title (max 30 characters)"
             android:inputType="textPersonName"
+            android:maxLength="30"
             android:text="" />
 
         <LinearLayout
@@ -121,15 +113,16 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:ems="10"
-            android:hint="Recurring Expense Notes"
+            android:hint="Notes (max 100 characters)"
             android:inputType="textPersonName"
+            android:maxLength="100"
             android:text="" />
 
         <Button
             android:id="@+id/button_editData"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Edit Expense"
+            android:text="Update Expense"
             android:layout_marginTop="15dp" />
 
         <Button

@@ -21,9 +21,12 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.bitcashier.helpers.CategoryAdapter;
+import com.example.bitcashier.helpers.CategoryItem;
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.helpers.ExpenseArrayAdapter;
+import com.example.bitcashier.models.Category;
 import com.example.bitcashier.models.Expense;
 import com.example.bitcashier.models.User;
 
@@ -44,6 +47,8 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
     private int mYear, mMonth, mDay;
     DateHelper dateHelper;
     User authUser;
+    CategoryAdapter customCategoryAdapter;
+    String appPackageName;
 
     public TransactionHistoryFragment() {
         // Required empty public constructor
@@ -57,6 +62,7 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
 
         dateHelper = new DateHelper();
         DbHelper expenseDB = new DbHelper(view.getContext());
+        appPackageName = view.getContext().getPackageName();
 
         editFromDate = view.findViewById(R.id.editText_fromDate);
         editToDate = view.findViewById(R.id.editText_toDate);
@@ -68,11 +74,10 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
         btnToDate = view.findViewById(R.id.button_selectToDate);
         btnResetForm = view.findViewById(R.id.button_resetForm);
 
-        ArrayList<String> categoriesList = expenseDB.getCategories();
-        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1,
-                categoriesList);
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCategory.setAdapter(categoryAdapter);
+        ArrayList<Category> categoriesList = expenseDB.getCategories();
+        ArrayList<CategoryItem> categoryItemsList = addIconsToCategoryList(view, categoriesList);
+        customCategoryAdapter = new CategoryAdapter(view.getContext(), categoryItemsList);
+        spinnerCategory.setAdapter(customCategoryAdapter);
         spinnerCategory.setOnItemSelectedListener(this);
 
         ArrayAdapter<CharSequence> paymentAdapter = ArrayAdapter.createFromResource(view.getContext(),
@@ -136,6 +141,19 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
         getExpenseData(view);
         // Inflate the layout for this fragment
         return view;
+    }
+
+    public ArrayList<CategoryItem> addIconsToCategoryList(View view, ArrayList<Category> categories) {
+        ArrayList<CategoryItem> categoryItems = new ArrayList<>();
+
+        for (int i=0; i<categories.size(); i++) {
+            Category currentCategory = categories.get(i);
+            int categoryImageId = view.getContext().getResources()
+                    .getIdentifier(appPackageName+":drawable/"+currentCategory.getCategory_icon() , null, null);
+            categoryItems.add(new CategoryItem(categoryImageId, currentCategory.getCategoryName()));
+        }
+
+        return categoryItems;
     }
 
     private User getAuthorizedUser() {
@@ -213,7 +231,6 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
         DbHelper expenseDB = new DbHelper(view.getContext());
 
         ArrayList<Expense> expensesList = expenseDB.loadExpenseData(authUser.getUsername(),selectedCategory,selectedPayment,selectedFromDate,selectedToDate);
-//        ArrayAdapter<Expense> expenseAdapter = new ArrayAdapter<>(view.getContext(), R.layout.expense_row_item, expensesList);
         ExpenseArrayAdapter expenseAdapter = new ExpenseArrayAdapter(view.getContext(), R.layout.card_view_row_item, expensesList);
         expenseListView.setAdapter(expenseAdapter);
 
@@ -226,7 +243,8 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if(id > 0) {
             if (parent.getId() == R.id.spinner_filter_category) {
-                selectedCategory = parent.getItemAtPosition(position).toString();
+                CategoryItem item = (CategoryItem) parent.getSelectedItem();
+                selectedCategory = item.getSpinnerItemName();
             } else if (parent.getId() == R.id.spinner_filter_payment) {
                 selectedPayment = parent.getItemAtPosition(position).toString();
             }

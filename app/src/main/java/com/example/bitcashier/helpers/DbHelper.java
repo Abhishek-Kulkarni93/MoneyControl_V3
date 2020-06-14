@@ -55,14 +55,22 @@ public class DbHelper extends SQLiteOpenHelper {
         categoryCountCursor.close();
     }
 
-    public ArrayList<String> getCategories() {
-        ArrayList<String> categories = new ArrayList<String>();
-        categories.add("Select a category");
+    public ArrayList<Category> getCategories() {
+        ArrayList<Category> categories = new ArrayList<>();
+        categories.add(new Category("Select a category"));
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor categoriesCursor = db.rawQuery(Category.GET_ALL_CATEGORIES_QUERY, null);
         while (categoriesCursor.moveToNext()) {
-            categories.add(categoriesCursor.getString(0));
+            Category category = new Category(
+                    categoriesCursor.getString(categoriesCursor.getColumnIndex(Category.CATEGORY_NAME)),
+                    categoriesCursor.getString(categoriesCursor.getColumnIndex(Category.CATEGORY_ICON)),
+                    categoriesCursor.getString(categoriesCursor.getColumnIndex(Category.CATEGORY_IMAGE))
+            );
+
+            category.setId(categoriesCursor.getInt(categoriesCursor.getColumnIndex(Category.ID)));
+
+            categories.add(category);
         }
 
         return categories;
@@ -78,11 +86,37 @@ public class DbHelper extends SQLiteOpenHelper {
         return (categoryCount > 0);
     }
 
+    public Category getSingleCategory(String categoryName) {
+        Category category = new Category();
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor resultCursor = db.rawQuery(Category.GET_CATEGORY_BY_NAME_QUERY, new String[]{categoryName});
+
+        /*
+         * Table Index 0 -- ID
+         * Table Index 1 -- name
+         * Table Index 2 -- icon
+         * Table Index 3 -- image
+         * */
+        while (resultCursor.moveToNext()) {
+            category.setId(resultCursor.getInt(resultCursor.getColumnIndex(Category.ID)));
+            category.setCategoryName(resultCursor.getString(resultCursor.getColumnIndex(Category.CATEGORY_NAME)));
+            category.setCategory_icon(resultCursor.getString(resultCursor.getColumnIndex(Category.CATEGORY_ICON)));
+            category.setCategory_image(resultCursor.getString(resultCursor.getColumnIndex(Category.CATEGORY_IMAGE)));
+        }
+
+        resultCursor.close();
+
+        return category;
+    }
+
     public boolean insertNewCategory(Category newCategory) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(Category.CATEGORY_NAME, newCategory.getCategoryName());
+        contentValues.put(Category.CATEGORY_ICON, newCategory.getCategory_icon());
+        contentValues.put(Category.CATEGORY_IMAGE, newCategory.getCategory_image());
 
         long result = db.insert(Category.CATEGORY_TABLE, null, contentValues);
 

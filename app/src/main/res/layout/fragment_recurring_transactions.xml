@@ -13,7 +13,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="25dp"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:textStyle="italic"
             android:padding="5dp"
             android:text="Click to repeat the expense"
             />

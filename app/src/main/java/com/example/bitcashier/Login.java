@@ -32,13 +32,6 @@ public class Login extends AppCompatActivity {
         editPassword = (EditText)findViewById(R.id.edit_passwordlogin);
         btnLogin = (Button)findViewById(R.id.button_login);
 
-//        btnLogin.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                validateUserEntries(v);
-//            }
-//        });
-
     }
 
     public void btnSignUp(View view) {
@@ -51,13 +44,13 @@ public class Login extends AppCompatActivity {
         String userName =editUsername.getText().toString();
         String password = editPassword.getText().toString();
 
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+//        startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
-//        if(!userName.isEmpty() && !password.isEmpty()){
-//            verifyUserCredentials(view, userName, password);
-//        } else {
-//            Toast.makeText(view.getContext(), "Please enter all the details", Toast.LENGTH_LONG).show();
-//        }
+        if(!userName.isEmpty() && !password.isEmpty()){
+            verifyUserCredentials(view, userName, password);
+        } else {
+            Toast.makeText(view.getContext(), "Please enter all the details", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void verifyUserCredentials(View view, String userName, String password) {

@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
     User authUser;
     DbHelper expenseDB;
     CategoryAdapter customCategoryAdapter;
+    String appPackageName;
 
     public AddExpenseFragment() {
         // Required empty public constructor
@@ -66,6 +68,7 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         expenseDB = new DbHelper(addExpenseView.getContext());
         dateHelper = new DateHelper();
         authUser = getAuthorizedUser();
+        appPackageName = addExpenseView.getContext().getPackageName();
 
         editAmount = addExpenseView.findViewById(R.id.editText_amount);
         editTitle = addExpenseView.findViewById(R.id.editText_title);
@@ -81,8 +84,8 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         editDate.setText(dateHelper.getCurrDateInDisplayFormat());
         selectedDate = dateHelper.getCurrDateInStoreFormat();
 
-        ArrayList<String> categoriesList = expenseDB.getCategories();
-        ArrayList<CategoryItem> categoryItemsList = addImagesToCategoryList(categoriesList);
+        ArrayList<Category> categoriesList = expenseDB.getCategories();
+        ArrayList<CategoryItem> categoryItemsList = addIconsToCategoryList(addExpenseView, categoriesList);
         customCategoryAdapter = new CategoryAdapter(addExpenseView.getContext(), categoryItemsList);
         spinnerCategory.setAdapter(customCategoryAdapter);
         spinnerCategory.setOnItemSelectedListener(this);
@@ -155,15 +158,14 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         return addExpenseView;
     }
 
-    public ArrayList<CategoryItem> addImagesToCategoryList(ArrayList<String> categories) {
+    public ArrayList<CategoryItem> addIconsToCategoryList(View view, ArrayList<Category> categories) {
         ArrayList<CategoryItem> categoryItems = new ArrayList<>();
 
         for (int i=0; i<categories.size(); i++) {
-            if(i == 0) {
-                categoryItems.add(new CategoryItem(R.drawable.ic_baseline_category_24, categories.get(i)));
-            } else {
-                categoryItems.add(new CategoryItem(R.drawable.ic_baseline_category_24, categories.get(i)));
-            }
+            Category currentCategory = categories.get(i);
+            int categoryImageId = view.getContext().getResources()
+                    .getIdentifier(appPackageName+":drawable/"+currentCategory.getCategory_icon() , null, null);
+            categoryItems.add(new CategoryItem(categoryImageId, currentCategory.getCategoryName()));
         }
 
         return categoryItems;
@@ -171,7 +173,9 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
 
     public void addNewCategory(View view, String newCategoryValue) {
         Category newCategory = new Category(newCategoryValue);
-        CategoryItem newCategoryItem = new CategoryItem(R.drawable.ic_baseline_category_24, newCategoryValue);
+        int categoryImageId = view.getContext().getResources()
+                .getIdentifier(appPackageName+":drawable/"+newCategory.getCategory_icon() , null, null);
+        CategoryItem newCategoryItem = new CategoryItem(categoryImageId, newCategoryValue);
         boolean isInserted =  expenseDB.insertNewCategory(newCategory);
         if(isInserted) {
             Toast.makeText(view.getContext(),
@@ -198,18 +202,22 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         if(!amountString.isEmpty() && !date.isEmpty() && !selectedCategory.isEmpty() && !selectedPaymentType.isEmpty()) {
             try {
                 amount = Double.parseDouble(amountString);
-                Expense newExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, authUser.getUsername());
-                boolean isInserted =  expenseDB.insertData(newExpense);
-                if(isInserted) {
-                    Toast.makeText(view.getContext(),"Expense added successfully", Toast.LENGTH_LONG).show();
-                    HomeFragment homeFragment = new HomeFragment();
-                    FragmentManager manager = getParentFragmentManager();
-                    manager.beginTransaction()
-                            .replace(R.id.navHostFragment,homeFragment)
-                            .addToBackStack(null)
-                            .commit();
+                if(amount < 100000) {
+                    Expense newExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, authUser.getUsername());
+                    boolean isInserted =  expenseDB.insertData(newExpense);
+                    if(isInserted) {
+                        Toast.makeText(view.getContext(),"Expense added successfully", Toast.LENGTH_LONG).show();
+                        HomeFragment homeFragment = new HomeFragment();
+                        FragmentManager manager = getParentFragmentManager();
+                        manager.beginTransaction()
+                                .replace(R.id.navHostFragment,homeFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    } else {
+                        Toast.makeText(view.getContext(),"Expense was not added due to errors", Toast.LENGTH_LONG).show();
+                    }
                 } else {
-                    Toast.makeText(view.getContext(),"Expense was not added due to errors", Toast.LENGTH_LONG).show();
+                    Toast.makeText(view.getContext(),"Amount cannot be greater than 5 digits", Toast.LENGTH_LONG).show();
                 }
             } catch (NumberFormatException e) {
                 Toast.makeText(view.getContext(),"Please enter only numbers", Toast.LENGTH_LONG).show();

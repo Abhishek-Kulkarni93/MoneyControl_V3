@@ -31,13 +31,6 @@ public class SignUp extends AppCompatActivity {
         editConfirmPassword = (EditText)findViewById(R.id.edit_confirm_password_signup);
         buttonRegister = (Button)findViewById(R.id.btn_register_signup);
 
-        buttonRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                validateUserEntries(v);
-            }
-        });
-
     }
 
     public void validateUserEntries(View view) {
