@@ -31,6 +31,11 @@
         <menu>
 
             <item
+                android:id="@+id/menuThreshold"
+                android:icon="@drawable/threshold"
+                android:title="@string/threshold" />
+
+            <item
                 android:id="@+id/menuSettings"
                 android:icon="@drawable/settings"
                 android:title="@string/settings" />

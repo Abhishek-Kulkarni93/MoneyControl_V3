@@ -12,6 +12,7 @@ public class Category {
 
     public static final String CATEGORY_COUNT_QUERY = "SELECT COUNT(*) FROM " + CATEGORY_TABLE;
     public static final String GET_ALL_CATEGORIES_QUERY = "SELECT * FROM " + CATEGORY_TABLE;
+    public static final String GET_ALL_CATEGORY_NAMES_QUERY = "SELECT "+ CATEGORY_NAME +" FROM " + CATEGORY_TABLE;
     public static final String CHECK_CATEGORY_EXISTS_QUERY = CATEGORY_COUNT_QUERY + " WHERE " + CATEGORY_NAME + "= ? COLLATE NOCASE";
     public static final String GET_CATEGORY_BY_NAME_QUERY = "SELECT * FROM " + CATEGORY_TABLE + " WHERE " + CATEGORY_NAME + "= ? COLLATE NOCASE";
 
@@ -98,6 +99,10 @@ public class Category {
         initInsertStatement += values;
 
         return initInsertStatement;
+    }
+
+    public String[] getDefaultCategories() {
+        return defaultCategories;
     }
 
     @Override

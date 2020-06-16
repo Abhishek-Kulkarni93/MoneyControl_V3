@@ -103,6 +103,10 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
                 editor.putString(userName+"-authusercurrency", selectedCurrency);
                 editor.putString(userName+"-currencysymbol", selectedCurrencySymbol);
                 editor.apply();
+
+                // Insert default threshold values for the user
+                expenseDB.insertDefaultCategoryThresholdValues(userName);
+
                 startActivity(new Intent(getApplicationContext(), AppInfo.class));
             } else {
                 Toast.makeText(view.getContext(),

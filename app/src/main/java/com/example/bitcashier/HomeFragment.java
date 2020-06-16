@@ -16,6 +16,9 @@ import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.models.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,7 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class HomeFragment extends Fragment {
 
     FloatingActionButton fabAddExpense, fabAddIncome;;
-    TextView tvUserName, tvTotalIncome, tvTotalExpense, tvTotalBalance;
+    TextView tvUserName, tvTotalIncome, tvTotalExpense, tvTotalBalance, tvBalanceMsg;
     String userCurrencySymbol = "";
 
     public HomeFragment() {
@@ -43,6 +46,8 @@ public class HomeFragment extends Fragment {
         tvTotalIncome = homeFragmentView.findViewById(R.id.tv_totalIncome);
         tvTotalExpense = homeFragmentView.findViewById(R.id.tv_totalExpense);
         tvTotalBalance = homeFragmentView.findViewById(R.id.tv_totalBalance);
+        tvBalanceMsg = homeFragmentView.findViewById(R.id.tv_balanceMsg);
+        tvBalanceMsg.setVisibility(View.INVISIBLE);
 
         User authUser = getAuthorizedUser();
         tvUserName.setText("Hello, " + authUser.getFullName());
@@ -50,14 +55,18 @@ public class HomeFragment extends Fragment {
         DbHelper expenseDB = new DbHelper(homeFragmentView.getContext());
         double userTotalIncome = 0, userTotalExpense = 0, userTotalBalance = 0;
         userTotalIncome = expenseDB.getUserTotalIncome(authUser.getUsername());
-        userTotalExpense = expenseDB.getUserTotalExpense(authUser.getUsername());
+        userTotalExpense = expenseDB.getUserTotalExpense(authUser.getUsername(),"");
         if(userTotalIncome > userTotalExpense) {
             userTotalBalance = userTotalIncome - userTotalExpense;
         }
 
-        tvTotalIncome.setText(userCurrencySymbol + userTotalIncome);
-        tvTotalExpense.setText(userCurrencySymbol + userTotalExpense);
-        tvTotalBalance.setText(userCurrencySymbol + userTotalBalance);
+        if(userTotalExpense > userTotalIncome) {
+            tvBalanceMsg.setVisibility(View.VISIBLE);
+        }
+
+        tvTotalIncome.setText(userCurrencySymbol + String.format("%.2f", userTotalIncome));
+        tvTotalExpense.setText(userCurrencySymbol + String.format("%.2f", userTotalExpense));
+        tvTotalBalance.setText(userCurrencySymbol + String.format("%.2f", userTotalBalance));
 
         fabAddIncome.setOnClickListener(new View.OnClickListener() {
             @Override

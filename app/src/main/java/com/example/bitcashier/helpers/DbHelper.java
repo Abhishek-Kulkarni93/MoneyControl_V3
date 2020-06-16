@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.example.bitcashier.models.Category;
 import com.example.bitcashier.models.Expense;
 import com.example.bitcashier.models.Income;
+import com.example.bitcashier.models.Threshold;
 import com.example.bitcashier.models.User;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(Expense.CREATE_EXPENSE_TABLE);
         db.execSQL(Income.CREATE_INCOME_TABLE);
         db.execSQL(User.CREATE_USER_TABLE);
+        db.execSQL(Threshold.CREATE_THRESHOLD_TABLE);
 
         insertDefaultCategories(db);
     }
@@ -39,6 +41,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+ Expense.EXPENSE_TABLE);
         db.execSQL("DROP TABLE IF EXISTS "+ Income.INCOME_TABLE);
         db.execSQL("DROP TABLE IF EXISTS "+ User.USER_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS "+ Threshold.THRESHOLD_TABLE);
         onCreate(db);
     }
 
@@ -71,6 +74,19 @@ public class DbHelper extends SQLiteOpenHelper {
             category.setId(categoriesCursor.getInt(categoriesCursor.getColumnIndex(Category.ID)));
 
             categories.add(category);
+        }
+
+        return categories;
+    }
+
+    public ArrayList<String> getCategoryStringList() {
+        ArrayList<String> categories = new ArrayList<>();
+        categories.add("Select a category");
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor categoriesCursor = db.rawQuery(Category.GET_ALL_CATEGORY_NAMES_QUERY, null);
+        while (categoriesCursor.moveToNext()) {
+            categories.add(categoriesCursor.getString(categoriesCursor.getColumnIndex(Category.CATEGORY_NAME)));
         }
 
         return categories;
@@ -110,17 +126,24 @@ public class DbHelper extends SQLiteOpenHelper {
         return category;
     }
 
-    public boolean insertNewCategory(Category newCategory) {
+    public boolean insertNewCategory(String userName, Category newCategory) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(Category.CATEGORY_NAME, newCategory.getCategoryName());
-        contentValues.put(Category.CATEGORY_ICON, newCategory.getCategory_icon());
-        contentValues.put(Category.CATEGORY_IMAGE, newCategory.getCategory_image());
+        ContentValues categoryContentValues = new ContentValues();
+        categoryContentValues.put(Category.CATEGORY_NAME, newCategory.getCategoryName());
+        categoryContentValues.put(Category.CATEGORY_ICON, newCategory.getCategory_icon());
+        categoryContentValues.put(Category.CATEGORY_IMAGE, newCategory.getCategory_image());
 
-        long result = db.insert(Category.CATEGORY_TABLE, null, contentValues);
+        long categoryInsertResult = db.insert(Category.CATEGORY_TABLE, null, categoryContentValues);
 
-        return result != -1;
+        ContentValues thresholdContentValues = new ContentValues();
+        thresholdContentValues.put(Threshold.USER_NAME, userName);
+        thresholdContentValues.put(Threshold.CATEGORY_NAME, newCategory.getCategoryName());
+        thresholdContentValues.put(Threshold.THRESHOLD_VALUE, 0);
+
+        long thresholdInsertResult = db.insert(Threshold.THRESHOLD_TABLE, null, thresholdContentValues);
+
+        return (categoryInsertResult != -1 && thresholdInsertResult != -1);
     }
 
     public boolean checkUserNameExists(String userName) {
@@ -167,6 +190,58 @@ public class DbHelper extends SQLiteOpenHelper {
         resultCursor.close();
 
         return authUser;
+    }
+
+    public void insertDefaultCategoryThresholdValues(String userName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int thresholdCount = 0;
+
+        Cursor thresholdCountCursor = db.rawQuery(Threshold.CHECK_THRESHOLD_EXISTS_FOR_USER_QUERY, new String[]{userName});
+        thresholdCount = (thresholdCountCursor.moveToFirst()) ? thresholdCountCursor.getInt(0) : 0;
+
+        if(thresholdCount == 0) {
+            db.execSQL(new Threshold().initDefaultThresholdInsertStatement(userName));
+        }
+
+        thresholdCountCursor.close();
+    }
+
+    public boolean updateCategoryThresholdValue(Threshold thresholdData) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Threshold.USER_NAME, thresholdData.getUser_name());
+        contentValues.put(Threshold.CATEGORY_NAME, thresholdData.getCategory_name());
+        contentValues.put(Threshold.THRESHOLD_VALUE, thresholdData.getThreshold_value());
+
+        String whereClause = Threshold.ID+" = ?";
+        String[] whereArgs = {String.valueOf(thresholdData.getId())};
+
+        return db.update(Threshold.THRESHOLD_TABLE, contentValues, whereClause, whereArgs) > 0;
+    }
+
+    public Threshold getThresholdValue(String userName, String categoryName) {
+        Threshold threshold = new Threshold();
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor resultCursor = db.rawQuery(Threshold.GET_THRESHOLD_FOR_CATEGORY_QUERY, new String[]{userName,categoryName});
+
+        /*
+         * Table Index 0 -- ID
+         * Table Index 1 -- user_name
+         * Table Index 2 -- category_name
+         * Table Index 3 -- threshold_value
+         * */
+        while (resultCursor.moveToNext()) {
+            threshold.setId(resultCursor.getInt(resultCursor.getColumnIndex(Threshold.ID)));
+            threshold.setUser_name(resultCursor.getString(resultCursor.getColumnIndex(Threshold.USER_NAME)));
+            threshold.setCategory_name(resultCursor.getString(resultCursor.getColumnIndex(Threshold.CATEGORY_NAME)));
+            threshold.setThreshold_value(resultCursor.getDouble(resultCursor.getColumnIndex(Threshold.THRESHOLD_VALUE)));
+        }
+
+        resultCursor.close();
+
+        return threshold;
     }
 
     public boolean insertData(Expense expenseData){
@@ -276,12 +351,21 @@ public class DbHelper extends SQLiteOpenHelper {
         return expensesList;
     }
 
-    public double getUserTotalExpense(String userName) {
+    public double getUserTotalExpense(String userName, String category) {
         double userTotalExpense = 0;
         SQLiteDatabase db = this.getWritableDatabase();
+        String expenseQuery = "";
+        String[] selectionArgs;
+        if(category.isEmpty()) {
+            selectionArgs = new String[]{userName};
+            expenseQuery = Expense.USER_EXPENSE_SUM_QUERY;
+        } else {
+            selectionArgs = new String[]{userName,category};
+            expenseQuery = Expense.USER_EXPENSE_SUM_BY_CATEGORY_QUERY;
+        }
 
-        Cursor expenseCursor = db.rawQuery(Expense.USER_EXPENSE_SUM_QUERY, new String[]{userName});
-        userTotalExpense = (expenseCursor.moveToFirst()) ? expenseCursor.getInt(0) : 0;
+        Cursor expenseCursor = db.rawQuery(expenseQuery, selectionArgs);
+        userTotalExpense = (expenseCursor.moveToFirst()) ? expenseCursor.getDouble(0) : 0;
         expenseCursor.close();
 
         return userTotalExpense;
@@ -397,7 +481,7 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         Cursor incomeCursor = db.rawQuery(Income.USER_INCOME_SUM_QUERY, new String[]{userName});
-        userTotalIncome = (incomeCursor.moveToFirst()) ? incomeCursor.getInt(0) : 0;
+        userTotalIncome = (incomeCursor.moveToFirst()) ? incomeCursor.getDouble(0) : 0;
         incomeCursor.close();
 
         return userTotalIncome;

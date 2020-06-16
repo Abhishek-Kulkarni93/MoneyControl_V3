@@ -3,12 +3,16 @@ package com.example.bitcashier;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.text.Spannable;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bitcashier.helpers.CategoryAdapter;
@@ -29,6 +34,7 @@ import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.models.Category;
 import com.example.bitcashier.models.Expense;
+import com.example.bitcashier.models.Threshold;
 
 import java.util.ArrayList;
 
@@ -80,18 +86,22 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         }
     }
 
+    TextView tvThresholdMsg;
     EditText editAmount, editTitle, editDate, editComment;
     Button buttonEditDate, buttonEditData, buttonDeleteData;
-    ImageButton btnAddNewCategory;
+    ImageButton btnAddNewCategory, btnStyleNotes;
     Spinner spinnerCategory, spinnerPaymentType;
     Switch switchRecurring;
 
     String selectedDate = "", selectedCategory = "", selectedPaymentType = "";
     private int mYear, mMonth, mDay;
     DateHelper dateHelper;
+    DbHelper expenseDB;
     Expense selectedExpense;
     CategoryAdapter customCategoryAdapter;
     String appPackageName;
+    boolean isTextBold = false, isTextItalics = false, isTextUnderline = false;
+    double categoryThresholdValue, userTotalExpenseForCategory;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,7 +110,7 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         View view = inflater.inflate(R.layout.fragment_edit_expense, container, false);
 
         dateHelper = new DateHelper();
-        final DbHelper expenseDB = new DbHelper(view.getContext());
+        expenseDB = new DbHelper(view.getContext());
         appPackageName = view.getContext().getPackageName();
         selectedExpense = expenseDB.getExpenseById(id);
         ArrayList<Category> categoriesList = expenseDB.getCategories();
@@ -113,12 +123,15 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         buttonEditDate = view.findViewById(R.id.button_editDate);
         buttonEditData = view.findViewById(R.id.button_editData);
         btnAddNewCategory = view.findViewById(R.id.btn_addNewCategory);
+        btnStyleNotes = view.findViewById(R.id.btn_styleNotes);
         buttonDeleteData = view.findViewById(R.id.button_deleteData);
         spinnerCategory = view.findViewById(R.id.spinner_editCategory);
         spinnerPaymentType = view.findViewById(R.id.spinner_editPaymentType);
 
         editDate.setText(dateHelper.getCurrDateInDisplayFormat());
         selectedDate = dateHelper.getCurrDateInStoreFormat();
+        tvThresholdMsg = view.findViewById(R.id.tv_editThresholdMsg);
+        tvThresholdMsg.setVisibility(View.INVISIBLE);
 
         ArrayList<CategoryItem> categoryItemsList = addIconsToCategoryList(view, categoriesList);
         customCategoryAdapter = new CategoryAdapter(view.getContext(), categoryItemsList);
@@ -206,6 +219,13 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
             }
         });
 
+        btnStyleNotes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showStyleNotesDialog(v);
+            }
+        });
+
         buttonEditDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -254,6 +274,10 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
 
         addSelectedCategoryToSpinner(view);
 
+        if(!selectedCategory.isEmpty() && repeat_mode.equals("no")) {
+            getCategoryThresholdValue();
+        }
+
         // Inflate the layout for this fragment
         return view;
     }
@@ -273,8 +297,6 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
 
         return categoryItems;
     }
-
-
 
     public void setExpenseDate(View view) {
         mYear = dateHelper.getCurrYear();
@@ -300,6 +322,11 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         datePickerDialog.show();
     }
 
+    public void getCategoryThresholdValue() {
+        Threshold categoryThreshold = expenseDB.getThresholdValue(selectedExpense.getUserName(), selectedCategory);
+        categoryThresholdValue = categoryThreshold.getThreshold_value();
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
@@ -307,10 +334,11 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
             if (parent.getId() == R.id.spinner_editCategory) {
                 CategoryItem item = (CategoryItem) parent.getSelectedItem();
                 selectedCategory = item.getSpinnerItemName();
+                tvThresholdMsg.setVisibility(View.INVISIBLE);
+                getCategoryThresholdValue();
             } else if (parent.getId() == R.id.spinner_editPaymentType) {
                 selectedPaymentType = parent.getItemAtPosition(position).toString();
             }
-            //Toast.makeText(MainActivity.this, "CAT: " + selectedCategory + " | " + "PT: " + selectedPaymentType, Toast.LENGTH_LONG).show();
         } else {
             if (parent.getId() == R.id.spinner_editCategory) {
                 selectedCategory = "";
@@ -335,13 +363,11 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
     }
 
     public void addNewCategory(View view, String newCategoryValue) {
-        DbHelper expenseDB = new DbHelper(view.getContext());
-
         Category newCategory = new Category(newCategoryValue);
         int categoryImageId = view.getContext().getResources()
                 .getIdentifier(appPackageName+":drawable/"+newCategory.getCategory_icon() , null, null);
         CategoryItem newCategoryItem = new CategoryItem(categoryImageId, newCategoryValue);
-        boolean isInserted =  expenseDB.insertNewCategory(newCategory);
+        boolean isInserted =  expenseDB.insertNewCategory(selectedExpense.getUserName(), newCategory);
         if(isInserted) {
             Toast.makeText(view.getContext(),
                     newCategoryValue + " category added successfully",
@@ -357,9 +383,130 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         }
     }
 
-    public void addRecurringExpense(View view) {
-        DbHelper expenseDB = new DbHelper(view.getContext());
+    public void showStyleNotesDialog(View view) {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
+        final View addStyledNotesView = getLayoutInflater().inflate(R.layout.dialog_styled_notes,null);
 
+        // EditText is in the dialog box
+        final EditText etAddNotes = addStyledNotesView.findViewById(R.id.editText_styledNotes);
+        if(!editComment.getText().toString().isEmpty()) {
+            etAddNotes.setText(editComment.getText().toString()); // this will yeeeeeeet!
+        }
+
+        Button btn_bold = addStyledNotesView.findViewById(R.id.btn_bold);
+        Button btn_italics = addStyledNotesView.findViewById(R.id.btn_italics);
+        Button btn_underline = addStyledNotesView.findViewById(R.id.btn_underline);
+        Button btn_cancel = addStyledNotesView.findViewById(R.id.btn_notesCancel);
+        Button btn_okay = addStyledNotesView.findViewById(R.id.btn_notesOkay);
+        alert.setView(addStyledNotesView);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+
+        btn_bold.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText notesEditText = addStyledNotesView.findViewById(R.id.editText_styledNotes);
+                Spannable str = notesEditText.getText();
+                int textSelectionStart = 0, textSelectionEnd = str.length();
+                if(notesEditText.getSelectionEnd() > notesEditText.getSelectionStart()) {
+                    textSelectionStart = notesEditText.getSelectionStart();
+                    textSelectionEnd = notesEditText.getSelectionEnd();
+                }
+
+                if(!isTextBold) {
+                    str.setSpan(new StyleSpan(Typeface.BOLD),
+                            textSelectionStart,
+                            textSelectionEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    isTextBold = true;
+                } else {
+                    StyleSpan[] strStyleSpan = str.getSpans(textSelectionStart,textSelectionEnd, StyleSpan.class);
+                    for (StyleSpan styleSpan : strStyleSpan) {
+                        if (styleSpan.getStyle() == Typeface.BOLD) {
+                            str.removeSpan(styleSpan);
+                            isTextBold = false;
+                        }
+                    }
+                }
+            }
+        });
+
+        btn_italics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText notesEditText = addStyledNotesView.findViewById(R.id.editText_styledNotes);
+                Spannable str = notesEditText.getText();
+                int textSelectionStart = 0, textSelectionEnd = str.length();
+                if(notesEditText.getSelectionEnd() > notesEditText.getSelectionStart()) {
+                    textSelectionStart = notesEditText.getSelectionStart();
+                    textSelectionEnd = notesEditText.getSelectionEnd();
+                }
+
+                if(!isTextItalics) {
+                    str.setSpan(new StyleSpan(Typeface.ITALIC),
+                            textSelectionStart,
+                            textSelectionEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    isTextItalics = true;
+                } else {
+                    StyleSpan[] strStyleSpan = str.getSpans(textSelectionStart,textSelectionEnd, StyleSpan.class);
+                    for (StyleSpan styleSpan : strStyleSpan) {
+                        if (styleSpan.getStyle() == Typeface.ITALIC) {
+                            str.removeSpan(styleSpan);
+                            isTextItalics = false;
+                        }
+                    }
+                }
+            }
+        });
+
+        btn_underline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText notesEditText = addStyledNotesView.findViewById(R.id.editText_styledNotes);
+                Spannable str = notesEditText.getText();
+                UnderlineSpan underlineSpan = new UnderlineSpan();
+                int textSelectionStart = 0, textSelectionEnd = str.length();
+                if(notesEditText.getSelectionEnd() > notesEditText.getSelectionStart()) {
+                    textSelectionStart = notesEditText.getSelectionStart();
+                    textSelectionEnd = notesEditText.getSelectionEnd();
+                }
+
+                if(!isTextUnderline) {
+                    str.setSpan(underlineSpan,
+                            textSelectionStart,
+                            textSelectionEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    isTextUnderline = true;
+                } else {
+                    UnderlineSpan[] strStyleSpan = str.getSpans(textSelectionStart,textSelectionEnd, UnderlineSpan.class);
+                    for (UnderlineSpan styleSpan : strStyleSpan) {
+                        if (styleSpan.getSpanTypeId() == underlineSpan.getSpanTypeId()) {
+                            str.removeSpan(styleSpan);
+                            isTextUnderline = false;
+                        }
+                    }
+                }
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        btn_okay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spannable comment = etAddNotes.getText();
+                editComment.setText(comment);
+                alertDialog.dismiss();
+            }
+        });
+
+        alertDialog.show();
+    }
+
+    public void addRecurringExpense(View view) {
         double amount = 0;
         String amountString = editAmount.getText().toString(),
                 title = editTitle.getText().toString(),
@@ -395,9 +542,6 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
     }
 
     public void editExpense(View view) {
-
-        DbHelper expenseDB = new DbHelper(view.getContext());
-
         double amount = 0;
         String amountString = editAmount.getText().toString(),
                 title = editTitle.getText().toString(),
@@ -414,7 +558,12 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
                     boolean isUpdated =  expenseDB.updateExpenseData(existingExpense);
                     if(isUpdated) {
                         Toast.makeText(view.getContext(),"Expense updated successfully", Toast.LENGTH_LONG).show();
-                        returnToTransactionHistory();
+                        userTotalExpenseForCategory = expenseDB.getUserTotalExpense(selectedExpense.getUserName(), selectedCategory);
+                        if(categoryThresholdValue > 0 && userTotalExpenseForCategory > categoryThresholdValue) {
+                            tvThresholdMsg.setVisibility(View.VISIBLE);
+                        } else {
+                            returnToTransactionHistory();
+                        }
                     } else {
                         Toast.makeText(view.getContext(),"Expense was not updated due to errors", Toast.LENGTH_LONG).show();
                     }
@@ -430,8 +579,6 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
     }
 
     public void deleteExpense(View view) {
-        DbHelper expenseDB = new DbHelper(view.getContext());
-
         if(expenseDB.deleteExpenseData(id)) {
             Toast.makeText(view.getContext(),"Expense deleted successfully", Toast.LENGTH_LONG).show();
             returnToTransactionHistory();

@@ -18,19 +18,29 @@ public class sliderAdapter extends PagerAdapter {
         this.context=context;
     }
     public int[] slide_images={
-            R.drawable.first_page_1,
-            R.drawable.sleep_icon,
-            R.drawable.code_icon
+            R.drawable.ob_bitcashier,
+            R.drawable.ob_home,
+            R.drawable.ob_transaction_history,
+            R.drawable.ob_recurring,
+            R.drawable.ob_currency_ex,
+            R.drawable.ob_threshold
     };
     public String[] slide_heading={
-            "About the App",
-            "SLEEP",
-            "CODE"
+            "BitCashier - by BitCoders!",
+            "HOME",
+            "EXPENSES",
+            "RECURRING EXPENSES",
+            "CURRENCIES",
+            "THRESHOLD"
     };
     public String[] slide_desc={
-            "EAT",
-            "SLEEP",
-            "CODE"
+            "A simple budget tracker to view and manage all your expenses. Be careful not to overspend!",
+            "Here, you can easily add in your Income and Expenses. Summary of your income and expenditure are also displayed here!",
+            "View all your expenses at a single click. We've included several filters to track your expenses in a more easier way. You can also edit or delete them!",
+            "Repeated expenses are common! You can manage them with a single click!",
+            "Travel a lot? Don't worry, we have you covered with our different currency options! You can also change your currency any time from the Settings Page!",
+            "Make sure to limit your expenditure! Set your threshold here so that you don't over spend!"
+
     };
     @Override
     public int getCount() {

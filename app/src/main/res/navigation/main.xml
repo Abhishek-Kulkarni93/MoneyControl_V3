@@ -31,6 +31,11 @@
         android:label="Recurring Transactions"
         tools:layout="@layout/fragment_recurring_transactions" />
     <fragment
+        android:id="@+id/menuThreshold"
+        android:name="com.example.bitcashier.ThresholdFragment"
+        android:label="fragment_threshold"
+        tools:layout="@layout/fragment_threshold" />
+    <fragment
         android:id="@+id/menuSettings"
         android:name="com.example.bitcashier.SettingsFragment"
         android:label="Settings"

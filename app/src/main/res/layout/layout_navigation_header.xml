@@ -25,10 +25,11 @@
         app:layout_constraintTop_toTopOf="@+id/myLogo" />
      
     <TextView
+        android:id="@+id/tv_userFullName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="User Name"
+        android:text="BitCashier"
         android:textColor="@color/colorPrimaryText"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -39,11 +40,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:text="username@gmail.com"
-        android:textColor="@color/colorGreen"
-        android:textSize="16sp"
+        android:text="Friendly budget tracker"
+        android:textColor="@color/colorGrey"
+        android:textSize="13sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/myLogo"
-        app:layout_constraintTop_toBottomOf="@id/viewSupporter" />
+        app:layout_constraintTop_toBottomOf="@id/viewSupporter"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

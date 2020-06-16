@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/main_background"
+    android:background="@drawable/app__background_v1"
     android:visibility="visible"
     tools:context=".MainActivity">
 
@@ -13,13 +13,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="320dp"
-        android:text="Button" />
+        android:text="Next" />
 
     <Button
         android:id="@+id/previous"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:text="Previous"
         android:visibility="invisible" />
 
     <androidx.viewpager.widget.ViewPager
@@ -33,6 +33,9 @@
         android:layout_width="match_parent"
         android:layout_height="99dp"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal"></LinearLayout>
+        android:gravity="center"
+        android:orientation="horizontal">
+
+    </LinearLayout>
 
 </RelativeLayout>

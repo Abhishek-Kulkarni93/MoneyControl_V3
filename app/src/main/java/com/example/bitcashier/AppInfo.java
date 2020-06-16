@@ -45,7 +45,7 @@ public class AppInfo extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if(nCurrentPage==2){
+                if(nCurrentPage==5){
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 }else mSlideViewPager.setCurrentItem(nCurrentPage+1);
             }
@@ -60,7 +60,7 @@ public class AppInfo extends AppCompatActivity {
     }
 
     public void addDotsIndicator(int position){
-        mDOts=new TextView[3];
+        mDOts=new TextView[6];
         mDotLayout.removeAllViews();
         for(int i=0;i<mDOts.length;i++){
             mDOts[i]=new TextView(this);
@@ -117,4 +117,3 @@ public class AppInfo extends AppCompatActivity {
         }
     };
 }
-//startActivity(new Intent(getApplicationContext(), MainActi.class));

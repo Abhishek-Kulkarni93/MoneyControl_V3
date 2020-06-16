@@ -2,6 +2,7 @@ package com.example.bitcashier;
 
 import android.app.DatePickerDialog;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -10,7 +11,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.text.Spannable;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bitcashier.helpers.CategoryAdapter;
@@ -30,6 +34,7 @@ import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.models.Category;
 import com.example.bitcashier.models.Expense;
+import com.example.bitcashier.models.Threshold;
 import com.example.bitcashier.models.User;
 
 import java.util.ArrayList;
@@ -40,9 +45,10 @@ import java.util.ArrayList;
  */
 public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
+    TextView tvThresholdMsg;
     EditText editAmount, editTitle, editDate, editComment;
     Button btnSelectDate, btnAddData;
-    ImageButton btnAddNewCategory;
+    ImageButton btnAddNewCategory, btnStyleNotes;
     Spinner spinnerCategory, spinnerPaymentType;
     Switch switchRecurring;
 
@@ -53,6 +59,8 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
     DbHelper expenseDB;
     CategoryAdapter customCategoryAdapter;
     String appPackageName;
+    boolean isTextBold = false, isTextItalics = false, isTextUnderline = false;
+    double categoryThresholdValue, userTotalExpenseForCategory;
 
     public AddExpenseFragment() {
         // Required empty public constructor
@@ -70,6 +78,7 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         authUser = getAuthorizedUser();
         appPackageName = addExpenseView.getContext().getPackageName();
 
+
         editAmount = addExpenseView.findViewById(R.id.editText_amount);
         editTitle = addExpenseView.findViewById(R.id.editText_title);
         editDate = addExpenseView.findViewById(R.id.editText_date);
@@ -78,11 +87,15 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         btnSelectDate = addExpenseView.findViewById(R.id.button_selectDate);
         btnAddData = addExpenseView.findViewById(R.id.button_addData);
         btnAddNewCategory = addExpenseView.findViewById(R.id.button_addNewCategory);
+        btnStyleNotes = addExpenseView.findViewById(R.id.button_styleNotes);
         spinnerCategory = addExpenseView.findViewById(R.id.spinner_category);
         spinnerPaymentType = addExpenseView.findViewById(R.id.spinner_paymentType);
 
         editDate.setText(dateHelper.getCurrDateInDisplayFormat());
         selectedDate = dateHelper.getCurrDateInStoreFormat();
+
+        tvThresholdMsg = addExpenseView.findViewById(R.id.tv_thresholdMsg);
+        tvThresholdMsg.setVisibility(View.INVISIBLE);
 
         ArrayList<Category> categoriesList = expenseDB.getCategories();
         ArrayList<CategoryItem> categoryItemsList = addIconsToCategoryList(addExpenseView, categoriesList);
@@ -140,6 +153,13 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
             }
         });
 
+        btnStyleNotes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showStyleNotesDialog(v);
+            }
+        });
+
         btnSelectDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -176,7 +196,7 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         int categoryImageId = view.getContext().getResources()
                 .getIdentifier(appPackageName+":drawable/"+newCategory.getCategory_icon() , null, null);
         CategoryItem newCategoryItem = new CategoryItem(categoryImageId, newCategoryValue);
-        boolean isInserted =  expenseDB.insertNewCategory(newCategory);
+        boolean isInserted =  expenseDB.insertNewCategory(authUser.getUsername(), newCategory);
         if(isInserted) {
             Toast.makeText(view.getContext(),
                     newCategoryValue + " category added successfully",
@@ -189,6 +209,129 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
                     newCategoryValue + " category was not added due to errors",
                     Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void showStyleNotesDialog(View view) {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
+        final View addStyledNotesView = getLayoutInflater().inflate(R.layout.dialog_styled_notes,null);
+
+        // EditText is in the dialog box
+        final EditText etAddNotes = addStyledNotesView.findViewById(R.id.editText_styledNotes);
+        if(!editComment.getText().toString().isEmpty()) {
+            etAddNotes.setText(editComment.getText().toString()); // this will yeeeeeeet!
+        }
+
+        Button btn_bold = addStyledNotesView.findViewById(R.id.btn_bold);
+        Button btn_italics = addStyledNotesView.findViewById(R.id.btn_italics);
+        Button btn_underline = addStyledNotesView.findViewById(R.id.btn_underline);
+        Button btn_cancel = addStyledNotesView.findViewById(R.id.btn_notesCancel);
+        Button btn_okay = addStyledNotesView.findViewById(R.id.btn_notesOkay);
+        alert.setView(addStyledNotesView);
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+
+        btn_bold.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText notesEditText = addStyledNotesView.findViewById(R.id.editText_styledNotes);
+                Spannable str = notesEditText.getText();
+                int textSelectionStart = 0, textSelectionEnd = str.length();
+                if(notesEditText.getSelectionEnd() > notesEditText.getSelectionStart()) {
+                    textSelectionStart = notesEditText.getSelectionStart();
+                    textSelectionEnd = notesEditText.getSelectionEnd();
+                }
+
+                if(!isTextBold) {
+                    str.setSpan(new StyleSpan(Typeface.BOLD),
+                            textSelectionStart,
+                            textSelectionEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    isTextBold = true;
+                } else {
+                    StyleSpan[] strStyleSpan = str.getSpans(textSelectionStart,textSelectionEnd, StyleSpan.class);
+                    for (StyleSpan styleSpan : strStyleSpan) {
+                        if (styleSpan.getStyle() == Typeface.BOLD) {
+                            str.removeSpan(styleSpan);
+                            isTextBold = false;
+                        }
+                    }
+                }
+            }
+        });
+
+        btn_italics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText notesEditText = addStyledNotesView.findViewById(R.id.editText_styledNotes);
+                Spannable str = notesEditText.getText();
+                int textSelectionStart = 0, textSelectionEnd = str.length();
+                if(notesEditText.getSelectionEnd() > notesEditText.getSelectionStart()) {
+                    textSelectionStart = notesEditText.getSelectionStart();
+                    textSelectionEnd = notesEditText.getSelectionEnd();
+                }
+
+                if(!isTextItalics) {
+                    str.setSpan(new StyleSpan(Typeface.ITALIC),
+                            textSelectionStart,
+                            textSelectionEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    isTextItalics = true;
+                } else {
+                    StyleSpan[] strStyleSpan = str.getSpans(textSelectionStart,textSelectionEnd, StyleSpan.class);
+                    for (StyleSpan styleSpan : strStyleSpan) {
+                        if (styleSpan.getStyle() == Typeface.ITALIC) {
+                            str.removeSpan(styleSpan);
+                            isTextItalics = false;
+                        }
+                    }
+                }
+            }
+        });
+
+        btn_underline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText notesEditText = addStyledNotesView.findViewById(R.id.editText_styledNotes);
+                Spannable str = notesEditText.getText();
+                UnderlineSpan underlineSpan = new UnderlineSpan();
+                int textSelectionStart = 0, textSelectionEnd = str.length();
+                if(notesEditText.getSelectionEnd() > notesEditText.getSelectionStart()) {
+                    textSelectionStart = notesEditText.getSelectionStart();
+                    textSelectionEnd = notesEditText.getSelectionEnd();
+                }
+
+                if(!isTextUnderline) {
+                    str.setSpan(underlineSpan,
+                            textSelectionStart,
+                            textSelectionEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    isTextUnderline = true;
+                } else {
+                    UnderlineSpan[] strStyleSpan = str.getSpans(textSelectionStart,textSelectionEnd, UnderlineSpan.class);
+                    for (UnderlineSpan styleSpan : strStyleSpan) {
+                        if (styleSpan.getSpanTypeId() == underlineSpan.getSpanTypeId()) {
+                            str.removeSpan(styleSpan);
+                            isTextUnderline = false;
+                        }
+                    }
+                }
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+        btn_okay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spannable comment = etAddNotes.getText();
+                editComment.setText(comment);
+                alertDialog.dismiss();
+            }
+        });
+
+        alertDialog.show();
     }
 
     public void addExpense(View view) {
@@ -207,12 +350,18 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
                     boolean isInserted =  expenseDB.insertData(newExpense);
                     if(isInserted) {
                         Toast.makeText(view.getContext(),"Expense added successfully", Toast.LENGTH_LONG).show();
-                        HomeFragment homeFragment = new HomeFragment();
-                        FragmentManager manager = getParentFragmentManager();
-                        manager.beginTransaction()
-                                .replace(R.id.navHostFragment,homeFragment)
-                                .addToBackStack(null)
-                                .commit();
+                        userTotalExpenseForCategory = expenseDB.getUserTotalExpense(authUser.getUsername(), selectedCategory);
+
+                        if(categoryThresholdValue > 0 && userTotalExpenseForCategory > categoryThresholdValue) {
+                            tvThresholdMsg.setVisibility(View.VISIBLE);
+                        } else {
+                            HomeFragment homeFragment = new HomeFragment();
+                            FragmentManager manager = getParentFragmentManager();
+                            manager.beginTransaction()
+                                    .replace(R.id.navHostFragment,homeFragment)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
                     } else {
                         Toast.makeText(view.getContext(),"Expense was not added due to errors", Toast.LENGTH_LONG).show();
                     }
@@ -269,16 +418,15 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
         if(id > 0) {
             if (parent.getId() == R.id.spinner_category) {
                 CategoryItem item = (CategoryItem) parent.getSelectedItem();
                 selectedCategory = item.getSpinnerItemName();
-                Toast.makeText(parent.getContext(), item.getSpinnerItemName(), Toast.LENGTH_SHORT).show();
+                tvThresholdMsg.setVisibility(View.INVISIBLE);
+                getCategoryThresholdValue();
             } else if (parent.getId() == R.id.spinner_paymentType) {
                 selectedPaymentType = parent.getItemAtPosition(position).toString();
             }
-            //Toast.makeText(MainActivity.this, "CAT: " + selectedCategory + " | " + "PT: " + selectedPaymentType, Toast.LENGTH_LONG).show();
         } else {
             if (parent.getId() == R.id.spinner_category) {
                 selectedCategory = "";
@@ -286,7 +434,11 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
                 selectedPaymentType = "";
             }
         }
+    }
 
+    public void getCategoryThresholdValue() {
+        Threshold categoryThreshold = expenseDB.getThresholdValue(authUser.getUsername(), selectedCategory);
+        categoryThresholdValue = categoryThreshold.getThreshold_value();
     }
 
     private User getAuthorizedUser() {

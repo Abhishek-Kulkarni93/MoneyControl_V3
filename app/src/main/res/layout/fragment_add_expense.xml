@@ -107,16 +107,32 @@
             android:text="Recurring Transaction?"
             android:textSize="17sp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/editText_comment"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:ems="10"
             android:hint="Notes (max 100 characters)"
             android:inputType="textPersonName"
             android:maxLength="100"
             android:text="" />
+
+        <ImageButton
+            android:id="@+id/button_styleNotes"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.10"
+            android:src="@drawable/ic_baseline_edit_24"
+            android:backgroundTint="@android:color/transparent"
+            />
+
+    </LinearLayout>
 
         <Button
             android:id="@+id/button_addData"
@@ -125,6 +141,26 @@
             android:onClick="addExpense"
             android:text="Add Expense"
             android:layout_marginTop="15dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp" >
+
+            <TextView
+                android:id="@+id/tv_thresholdMsg"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Threshold exceeded!"
+                android:textStyle="bold|italic"
+                android:textSize="21sp"
+                android:background="@color/colorAccent"
+                android:textColor="@color/colorWhite"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ThresholdFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:textStyle="italic"
+            android:padding="5dp"
+            android:layout_marginBottom="15dp"
+            android:text="@string/select_category_threshold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            >
+
+            <Spinner
+                android:id="@+id/spinner_selectThresholdCategory"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="5dp"
+                android:spinnerMode="dropdown"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp" >
+
+            <ImageView
+                android:id="@+id/imageThreshold"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/threshold"
+                android:tint="@null"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/current_threshold"
+                android:textStyle="bold"
+                android:textSize="17sp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/tv_currentThreshold"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="€500"
+                android:textStyle="bold"
+                android:textSize="17sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="20dp" >
+
+            <ImageView
+                android:id="@+id/currentExpense"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/addtransaction"
+                android:tint="@null"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/current_expense"
+                android:textStyle="bold"
+                android:textSize="17sp"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/tv_currentExpense"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="€500"
+                android:textStyle="bold"
+                android:textSize="17sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:layout_marginTop="30dp">
+
+            <EditText
+                android:id="@+id/editText_threshold"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="Set Threshold (max 5 digits)"
+                android:inputType="numberSigned|number|numberDecimal"
+                android:text="" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/colorPrimary"
+                android:text="SET"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:layout_weight="0.30"
+                android:layout_marginLeft="5dp"
+                android:id="@+id/btn_setThreshold"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</FrameLayout>
