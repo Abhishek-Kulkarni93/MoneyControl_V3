@@ -120,26 +120,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp" >
-
-            <TextView
-                android:id="@+id/tv_balanceMsg"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Expenses have exceeded your income!"
-                android:textStyle="bold|italic"
-                android:textSize="21sp"
-                android:background="@color/colorAccent"
-                android:textColor="@color/colorWhite"/>
-
-        </LinearLayout>
-
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -49,6 +49,7 @@
             android:fontFamily="sans-serif-thin"
             android:ems="10"
             android:inputType="textPersonName"
+            android:maxLength="25"
             android:textSize="20sp"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -70,6 +71,7 @@
             android:fontFamily="sans-serif-thin"
             android:ems="10"
             android:inputType="textPersonName"
+            android:maxLength="25"
             android:textSize="20sp"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -91,6 +93,7 @@
             android:fontFamily="sans-serif-thin"
             android:ems="10"
             android:inputType="textPassword"
+            android:maxLength="20"
             android:textSize="20sp"
             />
     </com.google.android.material.textfield.TextInputLayout>
@@ -112,6 +115,7 @@
             android:fontFamily="sans-serif-thin"
             android:ems="10"
             android:inputType="textVisiblePassword"
+            android:maxLength="20"
             android:textSize="20sp"
             />
 

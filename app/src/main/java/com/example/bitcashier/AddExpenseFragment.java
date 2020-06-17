@@ -1,7 +1,9 @@
 package com.example.bitcashier;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
@@ -23,6 +25,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -45,15 +48,45 @@ import java.util.ArrayList;
  */
 public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
-    TextView tvThresholdMsg;
-    EditText editAmount, editTitle, editDate, editComment;
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "CONTACT_NAME";
+    private static final String TAG = "AddExpenseFragment";
+
+    // TODO: Rename and change types of parameters
+    private String contact_name;
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param contactName Parameter 1.
+     * @return A new instance of fragment AddExpenseFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static AddExpenseFragment newInstance(String contactName) {
+        AddExpenseFragment fragment = new AddExpenseFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, contactName);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            contact_name = getArguments().getString(ARG_PARAM1);
+        }
+    }
+
+    EditText editAmount, editTitle, editDate, editComment, editContact;
     Button btnSelectDate, btnAddData;
-    ImageButton btnAddNewCategory, btnStyleNotes;
+    ImageButton btnAddNewCategory, btnStyleNotes, btnOpenContacts;
     Spinner spinnerCategory, spinnerPaymentType;
     Switch switchRecurring;
 
     String selectedDate = "", selectedCategory = "", selectedPaymentType = "";
-    private int mYear, mMonth, mDay;
     DateHelper dateHelper;
     User authUser;
     DbHelper expenseDB;
@@ -94,8 +127,10 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         editDate.setText(dateHelper.getCurrDateInDisplayFormat());
         selectedDate = dateHelper.getCurrDateInStoreFormat();
 
-        tvThresholdMsg = addExpenseView.findViewById(R.id.tv_thresholdMsg);
-        tvThresholdMsg.setVisibility(View.INVISIBLE);
+        btnOpenContacts = addExpenseView.findViewById(R.id.button_openContacts);
+        editContact = addExpenseView.findViewById(R.id.editText_selectedContact);
+        editContact.setEnabled(false);
+        btnOpenContacts.setEnabled(false);
 
         ArrayList<Category> categoriesList = expenseDB.getCategories();
         ArrayList<CategoryItem> categoryItemsList = addIconsToCategoryList(addExpenseView, categoriesList);
@@ -115,9 +150,9 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
                 final View clickView = v;
                 final AlertDialog.Builder alert = new AlertDialog.Builder(v.getContext());
                 View addCategoryView = getLayoutInflater().inflate(R.layout.dialog_add_new_category,null);
-                final EditText etAddCategory = (EditText)addCategoryView.findViewById(R.id.editText_category);
-                Button btn_cancel = (Button)addCategoryView.findViewById(R.id.btn_cancel);
-                Button btn_add = (Button)addCategoryView.findViewById(R.id.btn_add);
+                final EditText etAddCategory = addCategoryView.findViewById(R.id.editText_category);
+                Button btn_cancel = addCategoryView.findViewById(R.id.btn_cancel);
+                Button btn_add = addCategoryView.findViewById(R.id.btn_add);
                 alert.setView(addCategoryView);
                 final AlertDialog alertDialog = alert.create();
                 alertDialog.setCanceledOnTouchOutside(false);
@@ -173,6 +208,28 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
                 addExpense(v);
             }
         });
+
+        btnOpenContacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ContactsFragment contactsFragment = ContactsFragment.newInstance("AddExpense", "");
+                FragmentManager manager = getParentFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.navHostFragment,contactsFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        if(contact_name != null && !contact_name.isEmpty()) {
+            editContact.setText(contact_name);
+            int selectedCatIconId = addExpenseView.getContext().getResources()
+                    .getIdentifier(appPackageName+":drawable/ic_friend" , null, null);
+            CategoryItem newCategoryItem = new CategoryItem(selectedCatIconId, "Friend");
+            customCategoryAdapter.add(newCategoryItem);
+            customCategoryAdapter.notifyDataSetChanged();
+            spinnerCategory.setSelection(customCategoryAdapter.getPosition(newCategoryItem));
+        }
 
         // Inflate the layout for this fragment
         return addExpenseView;
@@ -342,18 +399,20 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
                 comment = editComment.getText().toString(),
                 recurring = (switchRecurring.isChecked()) ? "yes" : "no";
 
+        String contactName = (selectedCategory.equals("Friend")) ? editContact.getText().toString() : "";
+
         if(!amountString.isEmpty() && !date.isEmpty() && !selectedCategory.isEmpty() && !selectedPaymentType.isEmpty()) {
             try {
                 amount = Double.parseDouble(amountString);
                 if(amount < 100000) {
-                    Expense newExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, authUser.getUsername());
+                    Expense newExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, authUser.getUsername(), contactName);
                     boolean isInserted =  expenseDB.insertData(newExpense);
                     if(isInserted) {
                         Toast.makeText(view.getContext(),"Expense added successfully", Toast.LENGTH_LONG).show();
                         userTotalExpenseForCategory = expenseDB.getUserTotalExpense(authUser.getUsername(), selectedCategory);
 
                         if(categoryThresholdValue > 0 && userTotalExpenseForCategory > categoryThresholdValue) {
-                            tvThresholdMsg.setVisibility(View.VISIBLE);
+                            showThresholdDialog(view);
                         } else {
                             HomeFragment homeFragment = new HomeFragment();
                             FragmentManager manager = getParentFragmentManager();
@@ -376,6 +435,28 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         }
     }
 
+    public void showThresholdDialog(View view) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(view.getContext());
+        dialog.setCancelable(false);
+        dialog.setTitle("ALERT");
+        dialog.setMessage("Threshold exceeded for this category!" );
+        dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                //Action for "Okay".
+            }
+        })
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Action for "Cancel".
+            }
+        });
+
+        final AlertDialog alert = dialog.create();
+        alert.show();
+    }
+
     public void resetExpenseForm() {
         editAmount.setText("");
         editTitle.setText("");
@@ -388,9 +469,9 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
     }
 
     public void setExpenseDate(View view) {
-        mYear = dateHelper.getCurrYear();
-        mMonth = dateHelper.getCurrMonth();
-        mDay = dateHelper.getCurrDay();
+        int mYear = dateHelper.getCurrYear();
+        int mMonth = dateHelper.getCurrMonth();
+        int mDay = dateHelper.getCurrDay();
 
         if(!editDate.getText().toString().isEmpty()) {
             DateHelper selectedDateHelper = new DateHelper(editDate.getText().toString(), "/");
@@ -422,7 +503,15 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
             if (parent.getId() == R.id.spinner_category) {
                 CategoryItem item = (CategoryItem) parent.getSelectedItem();
                 selectedCategory = item.getSpinnerItemName();
-                tvThresholdMsg.setVisibility(View.INVISIBLE);
+
+                if(selectedCategory.equals("Friend")) {
+                    editContact.setEnabled(true);
+                    btnOpenContacts.setEnabled(true);
+                } else {
+                    editContact.setEnabled(false);
+                    btnOpenContacts.setEnabled(false);
+                }
+
                 getCategoryThresholdValue();
             } else if (parent.getId() == R.id.spinner_paymentType) {
                 selectedPaymentType = parent.getItemAtPosition(position).toString();

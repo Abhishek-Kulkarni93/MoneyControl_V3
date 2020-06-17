@@ -49,11 +49,13 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = Expense.ID;
     private static final String ARG_PARAM2 = "REPEAT_MODE";
+    private static final String ARG_PARAM3 = "CONTACT_NAME";
     private static final String TAG = "EditExpenseFragment";
 
     // TODO: Rename and change types of parameters
     private int id;
     private String repeat_mode;
+    private String contact_name;
 
     public EditExpenseFragment() {
         // Required empty public constructor
@@ -77,24 +79,43 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         return fragment;
     }
 
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param id Parameter 1.
+     * @param repeat_mode Parameter 2.
+     * @param contact_name Parameter 3.
+     * @return A new instance of fragment EditExpenseFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static EditExpenseFragment newInstanceFromContact(String id, String repeat_mode, String contact_name) {
+        EditExpenseFragment fragment = new EditExpenseFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, id);
+        args.putString(ARG_PARAM2, repeat_mode);
+        args.putString(ARG_PARAM3, contact_name);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             id = Integer.parseInt(getArguments().getString(ARG_PARAM1));
             repeat_mode = getArguments().getString(ARG_PARAM2);
+            contact_name = (getArguments().getString(ARG_PARAM3) != null) ? getArguments().getString(ARG_PARAM3) : "";
         }
     }
 
-    TextView tvThresholdMsg;
-    EditText editAmount, editTitle, editDate, editComment;
+    EditText editAmount, editTitle, editDate, editComment, editContact;
     Button buttonEditDate, buttonEditData, buttonDeleteData;
-    ImageButton btnAddNewCategory, btnStyleNotes;
+    ImageButton btnAddNewCategory, btnStyleNotes, btnOpenContacts;
     Spinner spinnerCategory, spinnerPaymentType;
     Switch switchRecurring;
 
     String selectedDate = "", selectedCategory = "", selectedPaymentType = "";
-    private int mYear, mMonth, mDay;
     DateHelper dateHelper;
     DbHelper expenseDB;
     Expense selectedExpense;
@@ -107,37 +128,40 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_edit_expense, container, false);
+        View editExpenseView = inflater.inflate(R.layout.fragment_edit_expense, container, false);
 
         dateHelper = new DateHelper();
-        expenseDB = new DbHelper(view.getContext());
-        appPackageName = view.getContext().getPackageName();
+        expenseDB = new DbHelper(editExpenseView.getContext());
+        appPackageName = editExpenseView.getContext().getPackageName();
         selectedExpense = expenseDB.getExpenseById(id);
         ArrayList<Category> categoriesList = expenseDB.getCategories();
 
-        editAmount = view.findViewById(R.id.editText_editAmount);
-        editTitle = view.findViewById(R.id.editText_editTitle);
-        editDate = view.findViewById(R.id.editText_editDate);
-        editComment = view.findViewById(R.id.editText_editComment);
-        switchRecurring = view.findViewById(R.id.switch_editRecurring);
-        buttonEditDate = view.findViewById(R.id.button_editDate);
-        buttonEditData = view.findViewById(R.id.button_editData);
-        btnAddNewCategory = view.findViewById(R.id.btn_addNewCategory);
-        btnStyleNotes = view.findViewById(R.id.btn_styleNotes);
-        buttonDeleteData = view.findViewById(R.id.button_deleteData);
-        spinnerCategory = view.findViewById(R.id.spinner_editCategory);
-        spinnerPaymentType = view.findViewById(R.id.spinner_editPaymentType);
+        editAmount = editExpenseView.findViewById(R.id.editText_editAmount);
+        editTitle = editExpenseView.findViewById(R.id.editText_editTitle);
+        editDate = editExpenseView.findViewById(R.id.editText_editDate);
+        editComment = editExpenseView.findViewById(R.id.editText_editComment);
+        switchRecurring = editExpenseView.findViewById(R.id.switch_editRecurring);
+        buttonEditDate = editExpenseView.findViewById(R.id.button_editDate);
+        buttonEditData = editExpenseView.findViewById(R.id.button_editData);
+        btnAddNewCategory = editExpenseView.findViewById(R.id.btn_addNewCategory);
+        btnStyleNotes = editExpenseView.findViewById(R.id.btn_styleNotes);
+        buttonDeleteData = editExpenseView.findViewById(R.id.button_deleteData);
+        spinnerCategory = editExpenseView.findViewById(R.id.spinner_editCategory);
+        spinnerPaymentType = editExpenseView.findViewById(R.id.spinner_editPaymentType);
 
         editDate.setText(dateHelper.getCurrDateInDisplayFormat());
         selectedDate = dateHelper.getCurrDateInStoreFormat();
-        tvThresholdMsg = view.findViewById(R.id.tv_editThresholdMsg);
-        tvThresholdMsg.setVisibility(View.INVISIBLE);
 
-        ArrayList<CategoryItem> categoryItemsList = addIconsToCategoryList(view, categoriesList);
-        customCategoryAdapter = new CategoryAdapter(view.getContext(), categoryItemsList);
+        btnOpenContacts = editExpenseView.findViewById(R.id.button_editOpenContacts);
+        editContact = editExpenseView.findViewById(R.id.et_editSelectedContact);
+        editContact.setEnabled(false);
+        btnOpenContacts.setEnabled(false);
+
+        ArrayList<CategoryItem> categoryItemsList = addIconsToCategoryList(editExpenseView, categoriesList);
+        customCategoryAdapter = new CategoryAdapter(editExpenseView.getContext(), categoryItemsList);
         spinnerCategory.setAdapter(customCategoryAdapter);
         selectedCategory = selectedExpense.getCategory();
-        int selectedCatIconId = view.getContext().getResources()
+        int selectedCatIconId = editExpenseView.getContext().getResources()
                 .getIdentifier(appPackageName+":drawable/ic_"+selectedCategory.toLowerCase(), null, null);
         CategoryItem selCategoryItem = new CategoryItem(selectedCatIconId, selectedCategory);
         Log.i(TAG, "IMG ID :: "+selectedCatIconId + " IMG NAME :: ic_"+selectedCategory.toLowerCase());
@@ -145,7 +169,7 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         spinnerCategory.setSelection(customCategoryAdapter.getPosition(selCategoryItem), true);
         spinnerCategory.setOnItemSelectedListener(this);
 
-        ArrayAdapter<CharSequence> paymentTypeAdapter = ArrayAdapter.createFromResource(view.getContext(),
+        ArrayAdapter<CharSequence> paymentTypeAdapter = ArrayAdapter.createFromResource(editExpenseView.getContext(),
                 R.array.payment_type, android.R.layout.simple_spinner_item);
         paymentTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPaymentType.setAdapter(paymentTypeAdapter);
@@ -157,6 +181,7 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         editComment.setText(selectedExpense.getNotes());
         switchRecurring.setChecked((selectedExpense.getRecurring().equals("yes")));
         spinnerPaymentType.setSelection(paymentTypeAdapter.getPosition(selectedExpense.getPayment_type()));
+
         selectedPaymentType = selectedExpense.getPayment_type();
         selectedDate = selectedExpense.getDate();
 
@@ -168,6 +193,8 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
             editTitle.setKeyListener(null);
             editTitle.setFocusable(false);
             editTitle.setTextColor(Color.GRAY);
+            editContact.setEnabled(false);
+            btnOpenContacts.setEnabled(false);
             spinnerCategory.setEnabled(false);
             spinnerPaymentType.setEnabled(false);
             switchRecurring.setClickable(false);
@@ -272,14 +299,36 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
             }
         });
 
-        addSelectedCategoryToSpinner(view);
+        btnOpenContacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ContactsFragment contactsFragment = ContactsFragment.newInstance(
+                        "EditExpense", String.valueOf(selectedExpense.getId()));
+                FragmentManager manager = getParentFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.navHostFragment,contactsFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+        addSelectedCategoryToSpinner(editExpenseView);
+
+        editContact.setText(selectedExpense.getContact_name());
+        if(contact_name != null && !contact_name.isEmpty()) {
+            editContact.setText(contact_name);
+        }
+        if(selectedExpense.getCategory().equals("Friend") && repeat_mode.equals("no")) {
+            editContact.setEnabled(true);
+            btnOpenContacts.setEnabled(true);
+        }
 
         if(!selectedCategory.isEmpty() && repeat_mode.equals("no")) {
             getCategoryThresholdValue();
         }
 
         // Inflate the layout for this fragment
-        return view;
+        return editExpenseView;
     }
 
     public ArrayList<CategoryItem> addIconsToCategoryList(View view, ArrayList<Category> categories) {
@@ -299,9 +348,9 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
     }
 
     public void setExpenseDate(View view) {
-        mYear = dateHelper.getCurrYear();
-        mMonth = dateHelper.getCurrMonth();
-        mDay = dateHelper.getCurrDay();
+        int mYear = dateHelper.getCurrYear();
+        int mMonth = dateHelper.getCurrMonth();
+        int mDay = dateHelper.getCurrDay();
 
         if(!editDate.getText().toString().isEmpty()) {
             DateHelper selectedDateHelper = new DateHelper(editDate.getText().toString(), "/");
@@ -334,7 +383,15 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
             if (parent.getId() == R.id.spinner_editCategory) {
                 CategoryItem item = (CategoryItem) parent.getSelectedItem();
                 selectedCategory = item.getSpinnerItemName();
-                tvThresholdMsg.setVisibility(View.INVISIBLE);
+
+                if(selectedCategory.equals("Friend") && repeat_mode.equals("no")) {
+                    editContact.setEnabled(true);
+                    btnOpenContacts.setEnabled(true);
+                } else {
+                    editContact.setEnabled(false);
+                    btnOpenContacts.setEnabled(false);
+                }
+
                 getCategoryThresholdValue();
             } else if (parent.getId() == R.id.spinner_editPaymentType) {
                 selectedPaymentType = parent.getItemAtPosition(position).toString();
@@ -514,14 +571,15 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
                 comment = editComment.getText().toString(),
                 recurring = (switchRecurring.isChecked()) ? "yes" : "no";
 
+        String contactName = (selectedCategory.equals("Friend")) ? editContact.getText().toString() : "";
+
         if(!amountString.isEmpty() && !date.isEmpty() && !selectedCategory.isEmpty() && !selectedPaymentType.isEmpty()) {
             try {
                 amount = Double.parseDouble(amountString);
-                Expense newExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, selectedExpense.getUserName());
+                Expense newExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, selectedExpense.getUserName(), contactName);
                 boolean isInserted =  expenseDB.insertData(newExpense);
                 if(isInserted) {
                     Toast.makeText(view.getContext(),"Expense repeated successfully", Toast.LENGTH_LONG).show();
-                    Log.println(Log.INFO, "ADDDATA", "Data Inserted");
 
                     RecurringTransactionsFragment recurringFragment = new RecurringTransactionsFragment();
                     FragmentManager manager = getParentFragmentManager();
@@ -531,7 +589,6 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
                             .commit();
                 } else {
                     Toast.makeText(view.getContext(),"Expense was not repeated due to errors", Toast.LENGTH_LONG).show();
-                    Log.println(Log.INFO, "ADDDATA", "Data not inserted");
                 }
             } catch (NumberFormatException e) {
                 Toast.makeText(view.getContext(),"Please enter only numbers", Toast.LENGTH_LONG).show();
@@ -549,18 +606,20 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
                 comment = editComment.getText().toString(),
                 recurring = (switchRecurring.isChecked()) ? "yes" : "no";
 
+        String contactName = (selectedCategory.equals("Friend")) ? editContact.getText().toString() : "";
+
         if(!amountString.isEmpty() && !date.isEmpty() && !selectedCategory.isEmpty() && !selectedPaymentType.isEmpty()) {
             try {
                 amount = Double.parseDouble(amountString);
                 if(amount < 100000) {
-                    Expense existingExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, selectedExpense.getUserName());
+                    Expense existingExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, selectedExpense.getUserName(), contactName);
                     existingExpense.setId(id);
                     boolean isUpdated =  expenseDB.updateExpenseData(existingExpense);
                     if(isUpdated) {
                         Toast.makeText(view.getContext(),"Expense updated successfully", Toast.LENGTH_LONG).show();
                         userTotalExpenseForCategory = expenseDB.getUserTotalExpense(selectedExpense.getUserName(), selectedCategory);
                         if(categoryThresholdValue > 0 && userTotalExpenseForCategory > categoryThresholdValue) {
-                            tvThresholdMsg.setVisibility(View.VISIBLE);
+                            showThresholdDialog(view);
                         } else {
                             returnToTransactionHistory();
                         }
@@ -576,6 +635,28 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         } else {
             Toast.makeText(view.getContext(),"Please enter all details", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void showThresholdDialog(View view) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(view.getContext());
+        dialog.setCancelable(false);
+        dialog.setTitle("ALERT");
+        dialog.setMessage("Threshold exceeded for this category!" );
+        dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                //Action for "Okay".
+            }
+        })
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Action for "Cancel".
+            }
+        });
+
+        final AlertDialog alert = dialog.create();
+        alert.show();
     }
 
     public void deleteExpense(View view) {

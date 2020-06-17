@@ -36,6 +36,33 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/ll_contactLayout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editText_selectedContact"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="Choose a Contact"
+                android:inputType="textPersonName"
+                android:text="" />
+
+            <ImageButton
+                android:id="@+id/button_openContacts"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.10"
+                android:src="@drawable/ic_baseline_contact_phone_24"
+                android:backgroundTint="@android:color/transparent"
+                />
+
+        </LinearLayout>
+
         <EditText
             android:id="@+id/editText_amount"
             android:layout_width="match_parent"
@@ -141,26 +168,6 @@
             android:onClick="addExpense"
             android:text="Add Expense"
             android:layout_marginTop="15dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp" >
-
-            <TextView
-                android:id="@+id/tv_thresholdMsg"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Threshold exceeded!"
-                android:textStyle="bold|italic"
-                android:textSize="21sp"
-                android:background="@color/colorAccent"
-                android:textColor="@color/colorWhite"/>
-
-        </LinearLayout>
 
     </LinearLayout>
 

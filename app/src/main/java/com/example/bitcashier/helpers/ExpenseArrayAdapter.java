@@ -56,8 +56,12 @@ public class ExpenseArrayAdapter extends ArrayAdapter<Expense> {
         TextView tvExpenseDate = expenseItemCardView.findViewById(R.id.tv_date);
         ImageView ivExpenseCategory = expenseItemCardView.findViewById(R.id.img_category);
 
+        String title = expense.getTitle();
+        if (expense.getCategory().equals("Friend") && !expense.getContact_name().isEmpty()) {
+            title += " ("+ expense.getContact_name() +")";
+        }
         tvExpenseTitle.setText(expense.getTitle());
-        tvExpenseAmount.setText(currencySymbol+ expense.getAmount());
+        tvExpenseAmount.setText(currencySymbol+ String.format("%.2f", expense.getAmount()));
         tvExpenseDate.setText(expense.getDateInDisplayFormat());
 
         int categoryImageId = context.getResources()

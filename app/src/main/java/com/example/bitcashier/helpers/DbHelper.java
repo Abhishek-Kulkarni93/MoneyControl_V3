@@ -75,6 +75,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
             categories.add(category);
         }
+        categoriesCursor.close();
 
         return categories;
     }
@@ -88,6 +89,7 @@ public class DbHelper extends SQLiteOpenHelper {
         while (categoriesCursor.moveToNext()) {
             categories.add(categoriesCursor.getString(categoriesCursor.getColumnIndex(Category.CATEGORY_NAME)));
         }
+        categoriesCursor.close();
 
         return categories;
     }
@@ -98,6 +100,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         Cursor categoryCountCursor = db.rawQuery(Category.CHECK_CATEGORY_EXISTS_QUERY, new String[]{newCategory});
         categoryCount = (categoryCountCursor.moveToFirst()) ? categoryCountCursor.getInt(0) : 0;
+        categoryCountCursor.close();
 
         return (categoryCount > 0);
     }
@@ -252,6 +255,7 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(Expense.TITLE, expenseData.getTitle());
         contentValues.put(Expense.DATE, expenseData.getDate());
         contentValues.put(Expense.CATEGORY, expenseData.getCategory());
+        contentValues.put(Expense.CONTACT_NAME, expenseData.getContact_name());
         contentValues.put(Expense.NOTES, expenseData.getNotes());
         contentValues.put(Expense.RECURRING, expenseData.getRecurring());
         contentValues.put(Expense.PAYMENT_TYPE, expenseData.getPayment_type());
@@ -338,7 +342,8 @@ public class DbHelper extends SQLiteOpenHelper {
                     resultCursor.getString(resultCursor.getColumnIndex(Expense.PAYMENT_TYPE)),
                     resultCursor.getString(resultCursor.getColumnIndex(Expense.NOTES)),
                     resultCursor.getString(resultCursor.getColumnIndex(Expense.RECURRING)),
-                    resultCursor.getString(resultCursor.getColumnIndex(Expense.USER_NAME))
+                    resultCursor.getString(resultCursor.getColumnIndex(Expense.USER_NAME)),
+                    resultCursor.getString(resultCursor.getColumnIndex(Expense.CONTACT_NAME))
             );
 
             expenseData.setId(resultCursor.getInt(resultCursor.getColumnIndex(Expense.ID)));
@@ -389,6 +394,7 @@ public class DbHelper extends SQLiteOpenHelper {
          * Table Index 8 -- user_name
          * */
         while (resultCursor.moveToNext()) {
+            expense.setId(resultCursor.getInt(resultCursor.getColumnIndex(Expense.ID)));
             expense.setAmount(resultCursor.getDouble(resultCursor.getColumnIndex(Expense.AMOUNT)));
             expense.setTitle(resultCursor.getString(resultCursor.getColumnIndex(Expense.TITLE)));
             expense.setDate(resultCursor.getString(resultCursor.getColumnIndex(Expense.DATE)));
@@ -397,6 +403,7 @@ public class DbHelper extends SQLiteOpenHelper {
             expense.setNotes(resultCursor.getString(resultCursor.getColumnIndex(Expense.NOTES)));
             expense.setRecurring(resultCursor.getString(resultCursor.getColumnIndex(Expense.RECURRING)));
             expense.setUserName(resultCursor.getString(resultCursor.getColumnIndex(Expense.USER_NAME)));
+            expense.setContact_name(resultCursor.getString(resultCursor.getColumnIndex(Expense.CONTACT_NAME)));
         }
 
         resultCursor.close();
@@ -412,6 +419,7 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(Expense.TITLE, expenseData.getTitle());
         contentValues.put(Expense.DATE, expenseData.getDate());
         contentValues.put(Expense.CATEGORY, expenseData.getCategory());
+        contentValues.put(Expense.CONTACT_NAME, expenseData.getContact_name());
         contentValues.put(Expense.NOTES, expenseData.getNotes());
         contentValues.put(Expense.RECURRING, expenseData.getRecurring());
         contentValues.put(Expense.PAYMENT_TYPE, expenseData.getPayment_type());

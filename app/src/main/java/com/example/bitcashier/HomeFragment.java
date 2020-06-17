@@ -1,8 +1,10 @@
 package com.example.bitcashier;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -16,9 +18,6 @@ import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.models.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,7 +25,7 @@ import java.text.DecimalFormat;
 public class HomeFragment extends Fragment {
 
     FloatingActionButton fabAddExpense, fabAddIncome;;
-    TextView tvUserName, tvTotalIncome, tvTotalExpense, tvTotalBalance, tvBalanceMsg;
+    TextView tvUserName, tvTotalIncome, tvTotalExpense, tvTotalBalance;
     String userCurrencySymbol = "";
 
     public HomeFragment() {
@@ -46,8 +45,6 @@ public class HomeFragment extends Fragment {
         tvTotalIncome = homeFragmentView.findViewById(R.id.tv_totalIncome);
         tvTotalExpense = homeFragmentView.findViewById(R.id.tv_totalExpense);
         tvTotalBalance = homeFragmentView.findViewById(R.id.tv_totalBalance);
-        tvBalanceMsg = homeFragmentView.findViewById(R.id.tv_balanceMsg);
-        tvBalanceMsg.setVisibility(View.INVISIBLE);
 
         User authUser = getAuthorizedUser();
         tvUserName.setText("Hello, " + authUser.getFullName());
@@ -61,7 +58,7 @@ public class HomeFragment extends Fragment {
         }
 
         if(userTotalExpense > userTotalIncome) {
-            tvBalanceMsg.setVisibility(View.VISIBLE);
+            showExpenseExceededDialog(homeFragmentView);
         }
 
         tvTotalIncome.setText(userCurrencySymbol + String.format("%.2f", userTotalIncome));
@@ -103,6 +100,28 @@ public class HomeFragment extends Fragment {
                 .replace(R.id.navHostFragment,addExpenseFragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    public void showExpenseExceededDialog(View view) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(view.getContext());
+        dialog.setCancelable(false);
+        dialog.setTitle("ALERT");
+        dialog.setMessage("Expenses have exceeded your income!" );
+        dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                //Action for "Okay".
+            }
+        })
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Action for "Cancel".
+            }
+        });
+
+        final AlertDialog alert = dialog.create();
+        alert.show();
     }
 
     private User getAuthorizedUser() {

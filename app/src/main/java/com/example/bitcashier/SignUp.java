@@ -72,10 +72,14 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         String confirmPassword = editConfirmPassword.getText().toString();
 
         if(!userName.isEmpty() && !userFullName.isEmpty() && !password.isEmpty() && !confirmPassword.isEmpty() && !selectedCurrency.isEmpty()) {
-            if (password.equals(confirmPassword)) {
-                addUser(view);
+            if(password.length() >= 4 && confirmPassword.length() >= 4) {
+                if (password.equals(confirmPassword)) {
+                    addUser(view);
+                } else {
+                    Toast.makeText(view.getContext(), "Password(s) do not match", Toast.LENGTH_LONG).show();
+                }
             } else {
-                Toast.makeText(view.getContext(), "Password(s) do not match", Toast.LENGTH_LONG).show();
+                Toast.makeText(view.getContext(), "Password cannot be less than 4 characters", Toast.LENGTH_LONG).show();
             }
         } else {
             Toast.makeText(view.getContext(), "Please enter all the details", Toast.LENGTH_LONG).show();
