@@ -7,8 +7,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceManager;
 
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -125,7 +125,7 @@ public class HomeFragment extends Fragment {
     }
 
     private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String username = settings.getString("authusername", null);
         userCurrencySymbol = settings.getString(username+"-currencysymbol", "€");
         return new User(

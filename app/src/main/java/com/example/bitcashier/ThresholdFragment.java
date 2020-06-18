@@ -4,8 +4,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -123,8 +123,8 @@ public class ThresholdFragment extends Fragment implements AdapterView.OnItemSel
 
         double categoryExpenseValue = expenseDB.getUserTotalExpense(authUser.getUsername(), selectedCategory);
 
-        tvCurrentThreshold.setText(userCurrencySymbol+categoryThreshold.getThreshold_value());
-        etThreshold.setText(Double.toString(categoryThreshold.getThreshold_value()));
+        tvCurrentThreshold.setText(userCurrencySymbol+String.format("%.2f", categoryThreshold.getThreshold_value()));
+        etThreshold.setText(String.format("%.2f", categoryThreshold.getThreshold_value()));
 
         tvCurrentExpense.setText(userCurrencySymbol + String.format("%.2f", categoryExpenseValue));
 
@@ -179,7 +179,7 @@ public class ThresholdFragment extends Fragment implements AdapterView.OnItemSel
     }
 
     private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String username = settings.getString("authusername", null);
         userCurrencySymbol = settings.getString(username+"-currencysymbol", "€");
         return new User(

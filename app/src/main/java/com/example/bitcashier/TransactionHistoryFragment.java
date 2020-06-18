@@ -6,8 +6,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceManager;
 
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -157,7 +157,7 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
     }
 
     private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return new User(
                 settings.getString("authusername", null),
                 settings.getString("authuserfullname", null));

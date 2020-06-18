@@ -1,8 +1,10 @@
 package com.example.bitcashier;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import com.example.bitcashier.helpers.CategoryItem;
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.models.CategoryExpense;
+import com.example.bitcashier.models.User;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.BarEntry;
@@ -79,7 +82,8 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
     Spinner spinnerFilterOptions, spinnerMonth, spinnerYear;
 
     DbHelper expenseDB;
-    String selectedFilterOption = "", selectedMonth = "", selectedYear = "";
+    User authUser;
+    String userCurrencySymbol = "", selectedFilterOption = "", selectedMonth = "", selectedYear = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -87,13 +91,7 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
 
         View statisticsFragmentView = inflater.inflate(R.layout.fragment_statistics, container, false);
         expenseDB = new DbHelper(statisticsFragmentView.getContext());
-        DateHelper dateHelper = new DateHelper();
-//        selectedMonth = DateHelper.appendZero(dateHelper.getCurrMonth()+1);
-//        selectedYear = String.valueOf(dateHelper.getCurrYear());
-
-//        Toast.makeText(statisticsFragmentView.getContext(),
-//                "selectedMonth: "+ selectedMonth +" selectedYear: "+ selectedYear,
-//                Toast.LENGTH_LONG).show();
+        authUser = getAuthorizedUser();
 
         expensesPieChart = statisticsFragmentView.findViewById(R.id.pie_expensesChart);
 //        expensesBarChart = statisticsFragmentView.findViewById(R.id.bar_expensesChart);
@@ -119,19 +117,15 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
         spinnerYear.setAdapter(yearsAdapter);
         spinnerYear.setOnItemSelectedListener(this);
 
-//        if (!selectedMonth.isEmpty()) spinnerMonth.setSelection(monthsAdapter.getPosition(
-//                DateHelper.MONTHS[dateHelper.getCurrMonth()+1]
-//        ));
-//        if (!selectedYear.isEmpty()) spinnerYear.setSelection(yearsAdapter.getPosition(selectedYear));
-
         // Inflate the layout for this fragment
         return statisticsFragmentView;
     }
 
     public ArrayList<PieEntry> pieChartDataSet() {
         ArrayList<PieEntry> dataSet = new ArrayList<>();
-        System.out.println("pieChartDataSet: User: abhi | Month: " + selectedMonth + " Year: " + selectedYear);
-        ArrayList<CategoryExpense> expenseArrayList = expenseDB.getCategoryWiseExpenseData("abhi",selectedMonth,selectedYear);
+        ArrayList<CategoryExpense> expenseArrayList = expenseDB.getCategoryWiseExpenseData(
+                authUser.getUsername(), selectedMonth, selectedYear
+        );
 
         for (CategoryExpense categoryExpense : expenseArrayList) {
             dataSet.add(new PieEntry((float) categoryExpense.getAmount(), categoryExpense.getCategory_name()));
@@ -150,7 +144,7 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
 
         expensesPieChart.setData(pieData);
         expensesPieChart.getDescription().setEnabled(false);
-        expensesPieChart.setCenterText("Expenses");
+        expensesPieChart.setCenterText("Expenses ("+ userCurrencySymbol +")");
         expensesPieChart.invalidate();
         expensesPieChart.animate();
     }
@@ -164,9 +158,6 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
                 selectedMonth = DateHelper.appendZero(
                         DateHelper.getMonthNumber(parent.getItemAtPosition(position).toString())
                 );
-                Toast.makeText(view.getContext(),
-                        selectedMonth,
-                        Toast.LENGTH_LONG).show();
             }  else if (parent.getId() == R.id.sp_filterYear) {
                 selectedYear = parent.getItemAtPosition(position).toString();
             }
@@ -189,5 +180,14 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    private User getAuthorizedUser() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String username = settings.getString("authusername", null);
+        userCurrencySymbol = settings.getString(username+"-currencysymbol", "€");
+        return new User(
+                settings.getString("authusername", null),
+                settings.getString("authuserfullname", null));
     }
 }

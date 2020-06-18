@@ -11,8 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceManager;
 
-import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
@@ -531,7 +531,7 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
     }
 
     private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return new User(
                 settings.getString("authusername", null),
                 settings.getString("authuserfullname", null));

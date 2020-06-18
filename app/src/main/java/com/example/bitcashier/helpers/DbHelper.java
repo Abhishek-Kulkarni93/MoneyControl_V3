@@ -524,8 +524,6 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<CategoryExpense> expenseArrayList = new ArrayList<>();
 
-        System.out.println("CategoryExpenseQuery: User: " + userName + " | Month: " + month + " Year: " + year);
-
         Cursor resultCursor = db.rawQuery(CategoryExpense.CATEGORY_EXPENSE_QUERY, new String[]{userName,month,year});
 
         /*

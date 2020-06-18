@@ -43,13 +43,6 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_showChart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Refresh Chart"
-        android:textStyle="bold"/>
-
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pie_expensesChart"
         android:layout_width="match_parent"
