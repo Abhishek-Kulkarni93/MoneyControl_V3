@@ -4,17 +4,18 @@ import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -31,7 +32,10 @@ public class ContactsFragment extends Fragment {
     private static final String ARG_PARAM2 = "EXPENSE_ID";
     private static final String TAG = "ContactsFragment";
 
+    View contactsFragmentView;
     ListView lvContacts;
+    ArrayAdapter<String> contactsAdapter;
+    EditText editSearchContacts;
 
     // TODO: Rename and change types of parameters
     private String called_from, expense_id;
@@ -70,48 +74,78 @@ public class ContactsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View contactsFragmentView = inflater.inflate(R.layout.fragment_contacts, container, false);
+        contactsFragmentView = inflater.inflate(R.layout.fragment_contacts, container, false);
 
         lvContacts = contactsFragmentView.findViewById(R.id.contactsList);
-        ArrayList<String> contactNamesList = getContacts();
-        ArrayAdapter<String> contactsAdapter = new ArrayAdapter<>(contactsFragmentView.getContext(),
-                android.R.layout.simple_list_item_1,contactNamesList);
         lvContacts.setAdapter(contactsAdapter);
+        editSearchContacts = contactsFragmentView.findViewById(R.id.editText_searchContacts);
 
-        Toast.makeText(contactsFragmentView.getContext(),"Expense ID: " + expense_id, Toast.LENGTH_LONG).show();
+//        Toast.makeText(contactsFragmentView.getContext(),"Expense ID: " + expense_id, Toast.LENGTH_LONG).show();
+
+        editSearchContacts.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(count == 0 || count >= 3) {
+                    getContacts(s.toString());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         lvContacts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedContact = parent.getAdapter().getItem(position).toString();
-                String[] splitContact = selectedContact.split(" \\| ");
+            String selectedContact = parent.getAdapter().getItem(position).toString();
+            String[] splitContact = selectedContact.split(" \\| ");
 
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                if (called_from.equals("AddExpense")) {
-                    transaction
-                            .replace(R.id.navHostFragment, AddExpenseFragment.newInstance(splitContact[0]))
-                            .addToBackStack(null)
-                            .commit();
-                } else if (called_from.equals("EditExpense")) {
-                    transaction
-                            .replace(R.id.navHostFragment, EditExpenseFragment.newInstanceFromContact(
-                                    expense_id, "no", splitContact[0]))
-                            .addToBackStack(null)
-                            .commit();
-                }
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            if (called_from.equals("AddExpense")) {
+                transaction
+                        .replace(R.id.navHostFragment, AddExpenseFragment.newInstance(splitContact[0]))
+                        .addToBackStack(null)
+                        .commit();
+            } else if (called_from.equals("EditExpense")) {
+                transaction
+                        .replace(R.id.navHostFragment, EditExpenseFragment.newInstanceFromContact(
+                                expense_id, "no", splitContact[0]))
+                        .addToBackStack(null)
+                        .commit();
+            }
             }
         });
+
+        getContacts("");
 
         // Inflate the layout for this fragment
         return contactsFragmentView;
     }
 
-    public ArrayList<String> getContacts() {
+    public void getContacts(String searchQuery) {
         ArrayList<String> contactList = new ArrayList<>();
+
+        String selection = null;
+        String[] selectionArgs = null;
+        if (!searchQuery.isEmpty()) {
+            selection = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?";
+            selectionArgs = new String[]{"%" + searchQuery + "%"};
+        }
 
         String contactsSortOrder = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC";
         Cursor contactCursor = getActivity().getContentResolver().query(
-                ContactsContract.Contacts.CONTENT_URI, null, null, null, contactsSortOrder
+                ContactsContract.Contacts.CONTENT_URI,
+                null,
+                selection,
+                selectionArgs,
+                contactsSortOrder
         );
 
         if(contactCursor.getCount() > 0) {
@@ -159,7 +193,10 @@ public class ContactsFragment extends Fragment {
         }
         contactCursor.close();
 
-        return contactList;
+        contactsAdapter = new ArrayAdapter<>(contactsFragmentView.getContext(),
+                android.R.layout.simple_list_item_1,contactList);
+        lvContacts.setAdapter(contactsAdapter);
+
     }
 
 }
