@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.bitcashier.models.Category;
+import com.example.bitcashier.models.CategoryExpense;
 import com.example.bitcashier.models.Expense;
 import com.example.bitcashier.models.Income;
 import com.example.bitcashier.models.Threshold;
@@ -517,5 +518,31 @@ public class DbHelper extends SQLiteOpenHelper {
         String[] whereArgs = {String.valueOf(incomeId)};
 
         return db.delete(Income.INCOME_TABLE, whereClause, whereArgs) > 0;
+    }
+
+    public ArrayList<CategoryExpense> getCategoryWiseExpenseData(String userName, String month, String year) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<CategoryExpense> expenseArrayList = new ArrayList<>();
+
+        System.out.println("CategoryExpenseQuery: User: " + userName + " | Month: " + month + " Year: " + year);
+
+        Cursor resultCursor = db.rawQuery(CategoryExpense.CATEGORY_EXPENSE_QUERY, new String[]{userName,month,year});
+
+        /*
+         * Table Index 0 -- category
+         * Table Index 1 -- amount
+         * */
+        while (resultCursor.moveToNext()) {
+            CategoryExpense categoryExpense = new CategoryExpense(
+                    resultCursor.getDouble(resultCursor.getColumnIndex(CategoryExpense.AMOUNT)),
+                    resultCursor.getString(resultCursor.getColumnIndex(CategoryExpense.CATEGORY_NAME))
+            );
+
+            expenseArrayList.add(categoryExpense);
+        }
+
+        resultCursor.close();
+
+        return expenseArrayList;
     }
 }

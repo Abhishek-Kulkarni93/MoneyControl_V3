@@ -104,22 +104,22 @@ public class ContactsFragment extends Fragment {
         lvContacts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String selectedContact = parent.getAdapter().getItem(position).toString();
-            String[] splitContact = selectedContact.split(" \\| ");
+                String selectedContact = parent.getAdapter().getItem(position).toString();
+                String[] splitContact = selectedContact.split(" \\| ");
 
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            if (called_from.equals("AddExpense")) {
-                transaction
-                        .replace(R.id.navHostFragment, AddExpenseFragment.newInstance(splitContact[0]))
-                        .addToBackStack(null)
-                        .commit();
-            } else if (called_from.equals("EditExpense")) {
-                transaction
-                        .replace(R.id.navHostFragment, EditExpenseFragment.newInstanceFromContact(
-                                expense_id, "no", splitContact[0]))
-                        .addToBackStack(null)
-                        .commit();
-            }
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                if (called_from.equals("AddExpense")) {
+                    transaction
+                            .replace(R.id.navHostFragment, AddExpenseFragment.newInstance(splitContact[0]))
+                            .addToBackStack(null)
+                            .commit();
+                } else if (called_from.equals("EditExpense")) {
+                    transaction
+                            .replace(R.id.navHostFragment, EditExpenseFragment.newInstanceFromContact(
+                                    expense_id, "no", splitContact[0]))
+                            .addToBackStack(null)
+                            .commit();
+                }
             }
         });
 
@@ -168,11 +168,11 @@ public class ContactsFragment extends Fragment {
 
                 if(hasPhoneNumber > 0) {
                     Cursor phoneNumberCursor = getActivity().getContentResolver().query(
-                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                        null,
-                        ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                        new String[]{contactId},
-                        null
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                            null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                            new String[]{contactId},
+                            null
                     );
 
                     if(phoneNumberCursor.moveToNext()) {

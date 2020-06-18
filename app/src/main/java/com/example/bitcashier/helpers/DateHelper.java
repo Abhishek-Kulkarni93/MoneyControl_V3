@@ -1,8 +1,12 @@
 package com.example.bitcashier.helpers;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 
 public class DateHelper {
+
+    public static String[] MONTHS = new String[] {"Select Month", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
     private int currYear, currMonth, currDay;
     private int givenYear, givenMonth, givenDay;
@@ -161,7 +165,7 @@ public class DateHelper {
         this.givenDateInStoreFormat = givenDateInStoreFormat;
     }
 
-    private String appendZero(int value) {
+    public static String appendZero(int value) {
         return (value < 10) ? "0"+value : ""+value;
     }
 
@@ -182,6 +186,24 @@ public class DateHelper {
         int month = Integer.parseInt(dateParts[1]) - 1;
         int year = Integer.parseInt(dateParts[2]);
         return new int[]{ year, month, day };
+    }
+
+    public static String[] yearsList(int upTo) {
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        String[] years = new String[upTo];
+        for (int i = 0; i < upTo; i++) {
+            if (i == 0) {
+                years[i] = "Select Year";
+            } else {
+                years[i] = Integer.toString(currentYear);
+                currentYear--;
+            }
+        }
+        return years;
+    }
+
+    public static int getMonthNumber(String month) {
+        return new ArrayList<>(Arrays.asList(MONTHS)).indexOf(month);
     }
 
 }

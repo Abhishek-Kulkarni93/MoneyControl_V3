@@ -26,6 +26,11 @@
         android:icon="@drawable/recurringtransaction"
         android:title="@string/recurring_transactions" />
 
+    <item
+        android:id="@+id/menuStatistics"
+        android:icon="@drawable/statistics"
+        android:title="@string/statistics" />
+
     <item android:title="@string/others">
 
         <menu>

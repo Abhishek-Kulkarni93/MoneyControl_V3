@@ -16,6 +16,7 @@
         <item>Transport</item>
         <item>Food</item>
     </string-array>
+
     <string-array name="currency">
         <item>Select a currency</item>
         <item>EUR (€) - European Euro</item>
@@ -28,6 +29,7 @@
         <item>CHF (₣) - Swiss Franc</item>
         <item>CAD ($) - Canadian Dollars</item>
     </string-array>
+
     <string-array name="payment_type">
         <item>Select a payment type</item>
         <item>Cash</item>
@@ -35,6 +37,14 @@
         <item>Credit Card</item>
         <item>Demand Draft</item>
         <item>SEPA</item>
+    </string-array>
+
+    <string-array name="filter_options">
+        <item>Select a filter option</item>
+        <!--Choose a month and year (default to current month and year)-->
+        <item>Category Expenses for a Month</item>
+        <!--Choose a year (default to current year)-->
+        <item>Category Expenses for a Year</item>
     </string-array>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -46,4 +56,5 @@
     <string name="select_category_threshold">Select a category to see it\'s threshold and expense</string>
     <string name="current_threshold">Current Threshold</string>
     <string name="current_expense">Current Expense</string>
+    <string name="statistics">Statistics</string>
 </resources>
