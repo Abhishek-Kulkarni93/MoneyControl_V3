@@ -524,7 +524,7 @@ public class DbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<CategoryExpense> expenseArrayList = new ArrayList<>();
 
-        Cursor resultCursor = db.rawQuery(CategoryExpense.CATEGORY_EXPENSE_QUERY, new String[]{userName,month,year});
+        Cursor resultCursor = db.rawQuery(CategoryExpense.CATEGORY_EXPENSE_BY_MONTH_QUERY, new String[]{userName,month,year});
 
         /*
          * Table Index 0 -- category
@@ -534,6 +534,30 @@ public class DbHelper extends SQLiteOpenHelper {
             CategoryExpense categoryExpense = new CategoryExpense(
                     resultCursor.getDouble(resultCursor.getColumnIndex(CategoryExpense.AMOUNT)),
                     resultCursor.getString(resultCursor.getColumnIndex(CategoryExpense.CATEGORY_NAME))
+            );
+
+            expenseArrayList.add(categoryExpense);
+        }
+
+        resultCursor.close();
+
+        return expenseArrayList;
+    }
+
+    public ArrayList<CategoryExpense> getYearWiseExpenseData(String userName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<CategoryExpense> expenseArrayList = new ArrayList<>();
+
+        Cursor resultCursor = db.rawQuery(CategoryExpense.CATEGORY_EXPENSE_BY_YEAR_QUERY, new String[]{userName});
+
+        /*
+         * Table Index 0 -- category
+         * Table Index 1 -- amount
+         * */
+        while (resultCursor.moveToNext()) {
+            CategoryExpense categoryExpense = new CategoryExpense(
+                    resultCursor.getInt(resultCursor.getColumnIndex(CategoryExpense.YEAR)),
+                    resultCursor.getDouble(resultCursor.getColumnIndex(CategoryExpense.AMOUNT))
             );
 
             expenseArrayList.add(categoryExpense);

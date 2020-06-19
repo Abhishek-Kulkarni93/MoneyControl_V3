@@ -49,11 +49,5 @@
         android:layout_height="match_parent"
         />
 
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/bar_expensesChart"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        />
 
 </LinearLayout>
