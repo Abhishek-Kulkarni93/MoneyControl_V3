@@ -520,11 +520,35 @@ public class DbHelper extends SQLiteOpenHelper {
         return db.delete(Income.INCOME_TABLE, whereClause, whereArgs) > 0;
     }
 
-    public ArrayList<CategoryExpense> getCategoryWiseExpenseData(String userName, String month, String year) {
+    public ArrayList<CategoryExpense> getMonthlyCategoryExpenseData(String userName, String month, String year) {
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<CategoryExpense> expenseArrayList = new ArrayList<>();
 
-        Cursor resultCursor = db.rawQuery(CategoryExpense.CATEGORY_EXPENSE_BY_MONTH_QUERY, new String[]{userName,month,year});
+        Cursor resultCursor = db.rawQuery(CategoryExpense.CATEGORY_EXPENSE_FOR_MONTH_QUERY, new String[]{userName,month,year});
+
+        /*
+         * Table Index 0 -- category
+         * Table Index 1 -- amount
+         * */
+        while (resultCursor.moveToNext()) {
+            CategoryExpense categoryExpense = new CategoryExpense(
+                    resultCursor.getDouble(resultCursor.getColumnIndex(CategoryExpense.AMOUNT)),
+                    resultCursor.getString(resultCursor.getColumnIndex(CategoryExpense.CATEGORY_NAME))
+            );
+
+            expenseArrayList.add(categoryExpense);
+        }
+
+        resultCursor.close();
+
+        return expenseArrayList;
+    }
+
+    public ArrayList<CategoryExpense> getYearlyCategoryExpenseData(String userName, String year) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<CategoryExpense> expenseArrayList = new ArrayList<>();
+
+        Cursor resultCursor = db.rawQuery(CategoryExpense.CATEGORY_EXPENSE_FOR_YEAR_QUERY, new String[]{userName,year});
 
         /*
          * Table Index 0 -- category

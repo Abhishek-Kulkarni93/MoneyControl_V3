@@ -7,30 +7,21 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
-import android.os.DeadObjectException;
 import android.text.SpannableString;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.bitcashier.helpers.CategoryItem;
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.models.CategoryExpense;
 import com.example.bitcashier.models.User;
-import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -38,7 +29,6 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -120,6 +110,8 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
         l.setYEntrySpace(0f);
         l.setYOffset(0f);
 
+        expensesPieChart.setEntryLabelColor(Color.BLACK);
+
         spinnerFilterOptions = statisticsFragmentView.findViewById(R.id.sp_filterOptions);
         spinnerMonth = statisticsFragmentView.findViewById(R.id.sp_filterMonth);
         spinnerYear = statisticsFragmentView.findViewById(R.id.sp_filterYear);
@@ -145,17 +137,25 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
         selectedMonth = DateHelper.appendZero(dateHelper.getCurrMonth()+1);
         selectedYear = String.valueOf(dateHelper.getCurrYear());
         selectedMonthString = DateHelper.MONTHS[dateHelper.getCurrMonth()+1];
-        getAndSetPieChartData(statisticsFragmentView);
+        getAndSetPieChartData(statisticsFragmentView, "monthly");
 
         // Inflate the layout for this fragment
         return statisticsFragmentView;
     }
 
-    public void getAndSetPieChartData(View view) {
+    public void getAndSetPieChartData(View view, String filterBy) {
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        ArrayList<CategoryExpense> expenseArrayList = expenseDB.getCategoryWiseExpenseData(
-                authUser.getUsername(), selectedMonth, selectedYear
-        );
+        ArrayList<CategoryExpense> expenseArrayList;
+
+        if (filterBy.equals("monthly")) {
+            expenseArrayList = expenseDB.getMonthlyCategoryExpenseData(
+                    authUser.getUsername(), selectedMonth, selectedYear
+            );
+        } else {
+            expenseArrayList = expenseDB.getYearlyCategoryExpenseData(
+                    authUser.getUsername(), selectedYear
+            );
+        }
 
         if (expenseArrayList.size() > 0) {
             for (CategoryExpense categoryExpense : expenseArrayList) {
@@ -196,18 +196,25 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
                 }
             });
             pieData.setValueTextSize(14f);
-            pieData.setValueTextColor(Color.WHITE);
+            pieData.setValueTextColor(Color.BLACK);
 
-            expensesPieChart.setCenterText(new SpannableString(
-                    "Expenses ("+ userCurrencySymbol +")\n("+ selectedMonthString +" - "+ selectedYear +")"
-            ));
+            String centerText = "Expenses ("+ userCurrencySymbol +")\n("+ selectedMonthString +" - "+ selectedYear +")";
+            if (filterBy.equals("yearly"))
+                centerText = "Expenses ("+ userCurrencySymbol +")\n("+ selectedYear +")";
+
+            expensesPieChart.setCenterText(new SpannableString( centerText ));
             expensesPieChart.animate();
             expensesPieChart.setData(pieData);
             expensesPieChart.invalidate();
         } else {
-            Toast.makeText(view.getContext(),
+            if (filterBy.equals("monthly"))
+                Toast.makeText(view.getContext(),
                     "No expenses found for "+ selectedMonthString +" "+ selectedYear,
                     Toast.LENGTH_LONG).show();
+            else
+                Toast.makeText(view.getContext(),
+                        "No expenses found for "+ selectedYear,
+                        Toast.LENGTH_LONG).show();
         }
     }
 
@@ -225,8 +232,13 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
                 selectedYear = parent.getItemAtPosition(position).toString();
             }
 
-            if (selectedFilterOption.equals("Category Expenses for a Month") && !selectedMonth.isEmpty() && !selectedYear.isEmpty()) {
-                getAndSetPieChartData(view);
+            if (selectedFilterOption.equals("Category Expenses for a Year")) {
+                getAndSetPieChartData(view, "yearly");
+                spinnerMonth.setEnabled(false);
+            } else if (selectedFilterOption.equals("Category Expenses for a Month")) {
+                spinnerMonth.setEnabled(true);
+                if (!selectedMonth.isEmpty())
+                    getAndSetPieChartData(view, "monthly");
             }
         } else {
             if (parent.getId() == R.id.sp_filterOptions) {

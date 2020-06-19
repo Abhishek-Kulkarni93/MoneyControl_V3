@@ -6,7 +6,8 @@ public class CategoryExpense {
     public static final String YEAR = "YEAR";
     public static final String AMOUNT = "AMOUNT";
 
-    public static final String CATEGORY_EXPENSE_BY_MONTH_QUERY = "SELECT "+ Expense.CATEGORY +", SUM("+ Expense.AMOUNT +") as "+ AMOUNT +" FROM "+ Expense.EXPENSE_TABLE +" WHERE "+ Expense.USER_NAME +" = ? COLLATE NOCASE AND strftime('%m', date) = ? AND strftime('%Y', date) = ? GROUP by "+ Expense.CATEGORY +";";
+    public static final String CATEGORY_EXPENSE_FOR_MONTH_QUERY = "SELECT "+ Expense.CATEGORY +", SUM("+ Expense.AMOUNT +") as "+ AMOUNT +" FROM "+ Expense.EXPENSE_TABLE +" WHERE "+ Expense.USER_NAME +" = ? COLLATE NOCASE AND strftime('%m', date) = ? AND strftime('%Y', date) = ? GROUP by "+ Expense.CATEGORY +";";
+    public static final String CATEGORY_EXPENSE_FOR_YEAR_QUERY = "SELECT "+ Expense.CATEGORY +", SUM("+ Expense.AMOUNT +") as "+ AMOUNT +" FROM "+ Expense.EXPENSE_TABLE +" WHERE "+ Expense.USER_NAME +" = ? COLLATE NOCASE AND strftime('%Y', date) = ? GROUP by "+ Expense.CATEGORY +";";
     public static final String CATEGORY_EXPENSE_BY_YEAR_QUERY = "SELECT strftime('%Y', date) as "+ YEAR +", SUM("+ Expense.AMOUNT +") as "+ AMOUNT +" FROM "+ Expense.EXPENSE_TABLE +" WHERE "+ Expense.USER_NAME +" = ? COLLATE NOCASE GROUP by strftime('%Y', date);";
 
     private double amount;
