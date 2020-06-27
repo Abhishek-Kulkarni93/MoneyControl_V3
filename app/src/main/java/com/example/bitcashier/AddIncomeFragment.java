@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
+import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.Expense;
 import com.example.bitcashier.models.Income;
 import com.example.bitcashier.models.User;
@@ -126,7 +127,8 @@ public class AddIncomeFragment extends Fragment {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return new User(
                 settings.getString("authusername", null),
-                settings.getString("authuserfullname", null));
+                settings.getString("authuserfullname", null),
+                settings.getString("authusercurrencycode", "EUR"));
     }
 
     public void setIncomeDate(View view) {
@@ -177,7 +179,8 @@ public class AddIncomeFragment extends Fragment {
             try {
                 amount = Double.parseDouble(amountString);
                 if(amount < 100000) {
-                    Income newUserIncome = new Income(amount, selectedDate, notes, authUser.getUsername());
+                    Currency incomeAmountObj = new Currency(amount, authUser.getCurrency());
+                    Income newUserIncome = new Income(incomeAmountObj.getEuroAmount(), selectedDate, notes, authUser.getUsername());
                     boolean isInserted =  expenseDB.insertUserIncome(newUserIncome);
                     if(isInserted) {
                         Toast.makeText(view.getContext(),

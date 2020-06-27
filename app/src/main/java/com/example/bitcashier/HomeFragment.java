@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.bitcashier.helpers.DbHelper;
+import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -50,9 +51,11 @@ public class HomeFragment extends Fragment {
         tvUserName.setText("Hello, " + authUser.getFullName());
 
         DbHelper expenseDB = new DbHelper(homeFragmentView.getContext());
-        double userTotalIncome = 0, userTotalExpense = 0, userTotalBalance = 0;
-        userTotalIncome = expenseDB.getUserTotalIncome(authUser.getUsername());
-        userTotalExpense = expenseDB.getUserTotalExpense(authUser.getUsername(),"");
+        double userTotalBalance = 0;
+
+        double userTotalIncome = expenseDB.getUserTotalIncome(authUser.getUsername());
+        double userTotalExpense = expenseDB.getUserTotalExpense(authUser.getUsername(),"");
+
         if(userTotalIncome > userTotalExpense) {
             userTotalBalance = userTotalIncome - userTotalExpense;
         }
@@ -61,9 +64,13 @@ public class HomeFragment extends Fragment {
             showExpenseExceededDialog(homeFragmentView);
         }
 
-        tvTotalIncome.setText(userCurrencySymbol + String.format("%.2f", userTotalIncome));
-        tvTotalExpense.setText(userCurrencySymbol + String.format("%.2f", userTotalExpense));
-        tvTotalBalance.setText(userCurrencySymbol + String.format("%.2f", userTotalBalance));
+        Currency totalIncomeObj = new Currency(userTotalIncome, authUser.getCurrency());
+        Currency totalExpenseObj = new Currency(userTotalExpense, authUser.getCurrency());
+        Currency totalBalanceObj = new Currency(userTotalBalance, authUser.getCurrency());
+
+        tvTotalIncome.setText(userCurrencySymbol + String.format("%.2f", totalIncomeObj.getOtherAmount()));
+        tvTotalExpense.setText(userCurrencySymbol + String.format("%.2f", totalExpenseObj.getOtherAmount()));
+        tvTotalBalance.setText(userCurrencySymbol + String.format("%.2f", totalBalanceObj.getOtherAmount()));
 
         fabAddIncome.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,10 +133,10 @@ public class HomeFragment extends Fragment {
 
     private User getAuthorizedUser() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String username = settings.getString("authusername", null);
-        userCurrencySymbol = settings.getString(username+"-currencysymbol", "€");
+        userCurrencySymbol = settings.getString("authusercurrencysymbol", "€");
         return new User(
                 settings.getString("authusername", null),
-                settings.getString("authuserfullname", null));
+                settings.getString("authuserfullname", null),
+                settings.getString("authusercurrencycode", "EUR"));
     }
 }

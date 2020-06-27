@@ -2,6 +2,7 @@ package com.example.bitcashier;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceManager;
 
 import android.text.Spannable;
 import android.text.style.StyleSpan;
@@ -33,8 +35,10 @@ import com.example.bitcashier.helpers.CategoryItem;
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.models.Category;
+import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.Expense;
 import com.example.bitcashier.models.Threshold;
+import com.example.bitcashier.models.User;
 
 import java.util.ArrayList;
 
@@ -117,6 +121,7 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
 
     String selectedDate = "", selectedCategory = "", selectedPaymentType = "";
     DateHelper dateHelper;
+    User authUser;
     DbHelper expenseDB;
     Expense selectedExpense;
     CategoryAdapter customCategoryAdapter;
@@ -132,6 +137,7 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
 
         dateHelper = new DateHelper();
         expenseDB = new DbHelper(editExpenseView.getContext());
+        authUser = getAuthorizedUser();
         appPackageName = editExpenseView.getContext().getPackageName();
         selectedExpense = expenseDB.getExpenseById(id);
         ArrayList<Category> categoriesList = expenseDB.getCategories();
@@ -175,7 +181,8 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         spinnerPaymentType.setAdapter(paymentTypeAdapter);
         spinnerPaymentType.setOnItemSelectedListener(this);
 
-        editAmount.setText(Double.toString(selectedExpense.getAmount()));
+        Currency expenseAmountObj = new Currency(selectedExpense.getAmount(), authUser.getCurrency());
+        editAmount.setText(String.format("%.2f", expenseAmountObj.getOtherAmount()));
         editTitle.setText(selectedExpense.getTitle());
         editDate.setText(selectedExpense.getDateInDisplayFormat());
         editComment.setText(selectedExpense.getNotes());
@@ -576,7 +583,8 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
         if(!amountString.isEmpty() && !date.isEmpty() && !selectedCategory.isEmpty() && !selectedPaymentType.isEmpty()) {
             try {
                 amount = Double.parseDouble(amountString);
-                Expense newExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, selectedExpense.getUserName(), contactName);
+                Currency expenseAmountObj = new Currency(amount, authUser.getCurrency());
+                Expense newExpense = new Expense(expenseAmountObj.getEuroAmount(), title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, selectedExpense.getUserName(), contactName);
                 boolean isInserted =  expenseDB.insertData(newExpense);
                 if(isInserted) {
                     Toast.makeText(view.getContext(),"Expense repeated successfully", Toast.LENGTH_LONG).show();
@@ -612,7 +620,8 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
             try {
                 amount = Double.parseDouble(amountString);
                 if(amount < 100000) {
-                    Expense existingExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, selectedExpense.getUserName(), contactName);
+                    Currency expenseAmountObj = new Currency(amount, authUser.getCurrency());
+                    Expense existingExpense = new Expense(expenseAmountObj.getEuroAmount(), title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, selectedExpense.getUserName(), contactName);
                     existingExpense.setId(id);
                     boolean isUpdated =  expenseDB.updateExpenseData(existingExpense);
                     if(isUpdated) {
@@ -675,5 +684,13 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
                 .replace(R.id.navHostFragment,transactionHistoryFragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private User getAuthorizedUser() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return new User(
+                settings.getString("authusername", null),
+                settings.getString("authuserfullname", null),
+                settings.getString("authusercurrencycode", "EUR"));
     }
 }

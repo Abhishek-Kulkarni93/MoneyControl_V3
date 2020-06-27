@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.bitcashier.models.Category;
 import com.example.bitcashier.models.CategoryExpense;
+import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.Expense;
 import com.example.bitcashier.models.Income;
 import com.example.bitcashier.models.Threshold;
@@ -168,6 +169,7 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(User.USER_NAME, newUser.getUsername());
         contentValues.put(User.FULL_NAME, newUser.getFullName());
         contentValues.put(User.PASSWORD, newUser.getPassword());
+        contentValues.put(User.CURRENCY, newUser.getCurrency());
 
         long result = db.insert(User.USER_TABLE, null, contentValues);
 
@@ -189,11 +191,24 @@ public class DbHelper extends SQLiteOpenHelper {
             authUser.setUsername(resultCursor.getString(resultCursor.getColumnIndex(User.USER_NAME)));
             authUser.setFullName(resultCursor.getString(resultCursor.getColumnIndex(User.FULL_NAME)));
             authUser.setPassword(resultCursor.getString(resultCursor.getColumnIndex(User.PASSWORD)));
+            authUser.setCurrency(resultCursor.getString(resultCursor.getColumnIndex(User.CURRENCY)));
         }
 
         resultCursor.close();
 
         return authUser;
+    }
+
+    public boolean updateUserCurrency(String userName, String currency) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(User.CURRENCY, currency);
+
+        String whereClause = User.USER_NAME+" = ?";
+        String[] whereArgs = {userName};
+
+        return db.update(User.USER_TABLE, contentValues, whereClause, whereArgs) > 0;
     }
 
     public void insertDefaultCategoryThresholdValues(String userName) {
@@ -266,7 +281,6 @@ public class DbHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    @SuppressLint("Recycle")
     public ArrayList<Expense> loadExpenseData(String userName, String category, String payment, String fromDate, String toDate) {
 
         String getExpensesQuery = "SELECT * FROM " + Expense.EXPENSE_TABLE + " WHERE "+ Expense.USER_NAME +"='"+ userName +"'";

@@ -3,7 +3,6 @@ package com.example.bitcashier;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
@@ -25,10 +24,8 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bitcashier.helpers.CategoryAdapter;
@@ -36,6 +33,7 @@ import com.example.bitcashier.helpers.CategoryItem;
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.models.Category;
+import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.Expense;
 import com.example.bitcashier.models.Threshold;
 import com.example.bitcashier.models.User;
@@ -405,7 +403,8 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
             try {
                 amount = Double.parseDouble(amountString);
                 if(amount < 100000) {
-                    Expense newExpense = new Expense(amount, title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, authUser.getUsername(), contactName);
+                    Currency expenseAmountObj = new Currency(amount, authUser.getCurrency());
+                    Expense newExpense = new Expense(expenseAmountObj.getEuroAmount(), title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, authUser.getUsername(), contactName);
                     boolean isInserted =  expenseDB.insertData(newExpense);
                     if(isInserted) {
                         Toast.makeText(view.getContext(),"Expense added successfully", Toast.LENGTH_LONG).show();
@@ -534,7 +533,8 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return new User(
                 settings.getString("authusername", null),
-                settings.getString("authuserfullname", null));
+                settings.getString("authuserfullname", null),
+                settings.getString("authusercurrencycode", "EUR"));
     }
 
     @Override

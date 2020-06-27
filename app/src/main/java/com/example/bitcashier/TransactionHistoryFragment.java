@@ -160,7 +160,8 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         return new User(
                 settings.getString("authusername", null),
-                settings.getString("authuserfullname", null));
+                settings.getString("authuserfullname", null),
+                settings.getString("authusercurrencycode", "EUR"));
     }
 
     public void setFromDateValue(View view) {

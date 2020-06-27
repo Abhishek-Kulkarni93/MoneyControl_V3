@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import com.example.bitcashier.R;
 import com.example.bitcashier.models.Category;
+import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.Expense;
 
 import java.util.ArrayList;
@@ -45,11 +46,12 @@ public class ExpenseArrayAdapter extends ArrayAdapter<Expense> {
         //get the inflater and inflate the XML layout for each item
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         View expenseItemCardView = inflater.inflate(R.layout.card_view_row_item, null);
+
         String appPackageName = context.getPackageName();
+
         SharedPreferences preferences = context.getSharedPreferences(appPackageName+"_preferences", 0);
-        Log.i(TAG, "getView: symbol: " + preferences.getString("currencysymbol", null));
-        String username = preferences.getString("authusername", null);
-        String currencySymbol = preferences.getString(username+"-currencysymbol", "€");
+        String currencyCode = preferences.getString("authusercurrencycode", "EUR");
+        String currencySymbol = preferences.getString("authusercurrencysymbol", "€");
 
         TextView tvExpenseTitle = expenseItemCardView.findViewById(R.id.tv_title);
         TextView tvExpenseAmount = expenseItemCardView.findViewById(R.id.tv_amount);
@@ -60,8 +62,10 @@ public class ExpenseArrayAdapter extends ArrayAdapter<Expense> {
         if (expense.getCategory().equals("Friend") && !expense.getContact_name().isEmpty()) {
             title += " ("+ expense.getContact_name() +")";
         }
+        Currency expenseAmountObj = new Currency(expense.getAmount(), currencyCode);
+
         tvExpenseTitle.setText(expense.getTitle());
-        tvExpenseAmount.setText(currencySymbol+ String.format("%.2f", expense.getAmount()));
+        tvExpenseAmount.setText(currencySymbol+ String.format("%.2f", expenseAmountObj.getOtherAmount()));
         tvExpenseDate.setText(expense.getDateInDisplayFormat());
 
         int categoryImageId = context.getResources()

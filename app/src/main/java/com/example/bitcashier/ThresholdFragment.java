@@ -180,10 +180,10 @@ public class ThresholdFragment extends Fragment implements AdapterView.OnItemSel
 
     private User getAuthorizedUser() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String username = settings.getString("authusername", null);
-        userCurrencySymbol = settings.getString(username+"-currencysymbol", "€");
+        userCurrencySymbol = settings.getString("authusercurrencysymbol", "€");
         return new User(
                 settings.getString("authusername", null),
-                settings.getString("authuserfullname", null));
+                settings.getString("authuserfullname", null),
+                settings.getString("authusercurrencycode", "EUR"));
     }
 }

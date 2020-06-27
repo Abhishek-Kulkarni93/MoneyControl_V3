@@ -1,11 +1,8 @@
 package com.example.bitcashier;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,8 +11,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.bitcashier.helpers.CategoryItem;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
+
 import com.example.bitcashier.helpers.DbHelper;
+import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.User;
 
 import java.util.regex.Matcher;
@@ -95,8 +95,9 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
         if(!expenseDB.checkUserNameExists(userName)) {
             String fullName = editFullName.getText().toString();
             String password = editPassword.getText().toString();
+            String selectedCurrencyCode = Currency.getCurrencyCode(selectedCurrency);
 
-            User newUser = new User(userName, fullName, password);
+            User newUser = new User(userName, fullName, password, selectedCurrencyCode);
             boolean isInserted =  expenseDB.insertNewUser(newUser);
 
             if(isInserted) {
@@ -104,8 +105,8 @@ public class SignUp extends AppCompatActivity implements AdapterView.OnItemSelec
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putString("authusername", userName);
                 editor.putString("authuserfullname", fullName);
-                editor.putString(userName+"-authusercurrency", selectedCurrency);
-                editor.putString(userName+"-currencysymbol", selectedCurrencySymbol);
+                editor.putString("authusercurrencycode", selectedCurrencyCode);
+                editor.putString("authusercurrencysymbol", selectedCurrencySymbol);
                 editor.apply();
 
                 // Insert default threshold values for the user
