@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bitcashier.helpers.DbHelper;
+import com.example.bitcashier.helpers.PreferencesHelper;
+import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.Threshold;
 import com.example.bitcashier.models.User;
 
@@ -87,7 +89,10 @@ public class ThresholdFragment extends Fragment implements AdapterView.OnItemSel
         View thresholdView = inflater.inflate(R.layout.fragment_threshold, container, false);
 
         expenseDB = new DbHelper(thresholdView.getContext());
-        authUser = getAuthorizedUser();
+
+        PreferencesHelper prefsHelper = new PreferencesHelper(thresholdView.getContext());
+        authUser = prefsHelper.getAuthenticatedUser();
+        userCurrencySymbol = prefsHelper.getAuthUserCurrencySymbol();
 
         spinnerCategory = thresholdView.findViewById(R.id.spinner_selectThresholdCategory);
         tvCurrentThreshold = thresholdView.findViewById(R.id.tv_currentThreshold);
@@ -123,10 +128,16 @@ public class ThresholdFragment extends Fragment implements AdapterView.OnItemSel
 
         double categoryExpenseValue = expenseDB.getUserTotalExpense(authUser.getUsername(), selectedCategory);
 
-        tvCurrentThreshold.setText(userCurrencySymbol+String.format("%.2f", categoryThreshold.getThreshold_value()));
-        etThreshold.setText(String.format("%.2f", categoryThreshold.getThreshold_value()));
+        Currency thresholdObj = new Currency(
+                categoryThreshold.getThreshold_value(), authUser.getCurrency()
+        );
+        tvCurrentThreshold.setText(userCurrencySymbol+String.format("%.2f", thresholdObj.getOtherAmount()));
+        etThreshold.setText(String.format("%.2f", thresholdObj.getOtherAmount()));
 
-        tvCurrentExpense.setText(userCurrencySymbol + String.format("%.2f", categoryExpenseValue));
+        Currency currentExpenseObj = new Currency(
+                categoryExpenseValue, authUser.getCurrency()
+        );
+        tvCurrentExpense.setText(userCurrencySymbol + String.format("%.2f", currentExpenseObj.getOtherAmount()));
 
         if(categoryThreshold.getThreshold_value() == 0 && categoryExpenseValue == 0) {
             Toast.makeText(view.getContext(),
@@ -139,7 +150,9 @@ public class ThresholdFragment extends Fragment implements AdapterView.OnItemSel
             } else if(categoryExpenseValue == 0) {
                 toastMsg = "No expenses found in "+ selectedCategory +" category";
             }
-            Toast.makeText(view.getContext(), toastMsg, Toast.LENGTH_LONG).show();
+
+            if (!toastMsg.isEmpty())
+                Toast.makeText(view.getContext(), toastMsg, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -147,7 +160,8 @@ public class ThresholdFragment extends Fragment implements AdapterView.OnItemSel
         double newThresholdValue = Double.parseDouble(etThreshold.getText().toString());
 
         if(newThresholdValue < 100000) {
-            Threshold editedThresholdData = new Threshold(currentThresholdId, authUser.getUsername(), selectedCategory, newThresholdValue);
+            Currency newThresholdObj = new Currency(newThresholdValue, authUser.getCurrency());
+            Threshold editedThresholdData = new Threshold(currentThresholdId, authUser.getUsername(), selectedCategory, newThresholdObj.getEuroAmount());
 
             if(expenseDB.updateCategoryThresholdValue(editedThresholdData)) {
                 Toast.makeText(view.getContext(),"Threshold updated successfully", Toast.LENGTH_LONG).show();
@@ -178,12 +192,4 @@ public class ThresholdFragment extends Fragment implements AdapterView.OnItemSel
 
     }
 
-    private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        userCurrencySymbol = settings.getString("authusercurrencysymbol", "€");
-        return new User(
-                settings.getString("authusername", null),
-                settings.getString("authuserfullname", null),
-                settings.getString("authusercurrencycode", "EUR"));
-    }
 }

@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.helpers.ExpenseArrayAdapter;
+import com.example.bitcashier.helpers.PreferencesHelper;
 import com.example.bitcashier.models.Expense;
 import com.example.bitcashier.models.User;
 
@@ -41,20 +42,14 @@ public class RecurringTransactionsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_recurring_transactions, container, false);
+        View recurringExpenseView = inflater.inflate(R.layout.fragment_recurring_transactions, container, false);
 
-        recurringExpenseListView = view.findViewById(R.id.lv_recurringExpensesList);
+        recurringExpenseListView = recurringExpenseView.findViewById(R.id.lv_recurringExpensesList);
 
         recurringExpenseListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Expense expense = (Expense) parent.getAdapter().getItem(position);
-
-//                Toast.makeText(
-//                    view.getContext(),
-//                    "ID: " + expense.getId() + " | Amount: " + expense.getAmount(),
-//                    Toast.LENGTH_LONG
-//                ).show();
 
                 EditExpenseFragment editExpenseFragment = EditExpenseFragment.newInstance(
                         String.valueOf(expense.getId()),"yes");
@@ -67,19 +62,12 @@ public class RecurringTransactionsFragment extends Fragment {
             }
         });
 
-        authUser = getAuthorizedUser();
+        authUser = new PreferencesHelper(recurringExpenseView.getContext())
+                .getAuthenticatedUser();
 
-        getRecurringExpenseData(view);
+        getRecurringExpenseData(recurringExpenseView);
         // Inflate the layout for this fragment
-        return view;
-    }
-
-    private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return new User(
-                settings.getString("authusername", null),
-                settings.getString("authuserfullname", null),
-                settings.getString("authusercurrencycode", "EUR"));
+        return recurringExpenseView;
     }
 
     public void getRecurringExpenseData(View view) {

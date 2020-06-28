@@ -13,76 +13,87 @@
         android:id="@+id/imageView"
         android:layout_width="40dp"
         android:layout_height="60dp"
-        android:layout_marginLeft="1dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="5dp"
         android:src="@drawable/mylogo"
-        android:layout_marginVertical="5dp">
+        android:layout_marginVertical="5dp"
+        android:contentDescription="@string/login_screen_app_logo">
     </ImageView>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="60dp"
+        android:layout_marginStart="60dp"
         android:fontFamily="sans-serif-thin"
-        android:text="User Login"
+        android:text="@string/login_screen_header"
         android:textColor="@color/colorWhite"
         android:layout_marginTop="-56dp"
         android:layout_marginBottom="5dp"
         android:textStyle="bold"
         android:textSize="30sp" />
 
-    <ImageView
-        android:layout_width="30dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="70dp"
-        android:src="@drawable/ic_person_black_24dp"
-        />
-
-    <com.google.android.material.textfield.TextInputLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:textColorHint="@color/colorPrimaryText"
+        android:orientation="vertical"
+        android:layout_marginTop="100dp"
         >
 
-        <EditText
-            android:id="@+id/edit_usernamelogin"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="User Name"
-            android:fontFamily="sans-serif-thin"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:maxLength="25"
-            android:textSize="20sp"
-            tools:ignore="InvalidId" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="1dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="@string/login_user_name_hint"
+            app:hintTextColor="@color/colorBlack"
+            app:boxStrokeColor="@color/colorBlack"
+            app:boxStrokeWidthFocused="2dp"
+            app:startIconDrawable="@drawable/ic_person_black_24dp"
+            app:endIconMode="clear_text"
+            app:endIconTint="@color/colorBlack"
+            >
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:textColorHint="@color/colorPrimaryText"
-        app:passwordToggleEnabled="true"
-        >
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_usernamelogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-thin"
+                android:inputType="textPersonName"
+                android:maxLength="25"
+                android:textSize="20sp"
+                android:textColor="@color/colorBlack"
+                />
 
-        <EditText
-            android:id="@+id/edit_passwordlogin"
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
-            android:fontFamily="sans-serif-thin"
-            android:ems="10"
-            android:inputType="textPassword"
-            android:maxLength="20"
-            android:textSize="20sp"
+            android:layout_marginTop="20dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="@string/login_password_hint"
+            app:hintTextColor="@color/colorBlack"
+            app:boxStrokeColor="@color/colorBlack"
+            app:boxStrokeWidthFocused="2dp"
+            app:passwordToggleEnabled="true"
+            app:startIconDrawable="@drawable/ic_baseline_lock_24"
+            >
 
-            />
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_passwordlogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-thin"
+                android:inputType="textPassword"
+                android:maxLength="20"
+                android:textSize="20sp"
+                android:textColor="@color/colorBlack"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/button_login"
@@ -90,7 +101,7 @@
         android:layout_gravity="center"
         android:layout_height="40dp"
         android:layout_marginTop="60dp"
-        android:text=" Login "
+        android:text="@string/login_screen_login_btn"
         android:textSize="15sp"
         android:fontFamily="sans-serif-smallcaps"
         android:background="@drawable/button_rounded"
@@ -103,7 +114,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="New User? Please sign up!"
+        android:text="@string/new_user_please_sign_up"
         android:textColor="@color/colorWhite"
         android:textSize="20sp"
         android:layout_marginTop="10dp"
@@ -115,17 +126,14 @@
         android:layout_gravity="center"
         android:layout_height="40dp"
         android:layout_marginTop="18dp"
-        android:text=" Sign up "
+        android:text="@string/login_screen_sign_up"
         android:textSize="15sp"
         android:fontFamily="sans-serif-smallcaps"
-        android:outlineAmbientShadowColor="@color/colorGreen"
-        android:shadowColor="@color/colorAccent"
         android:background="@drawable/button_rounded"
         android:backgroundTint="@color/colorWhite"
         android:textColor="@color/colorPrimaryDark"
         android:textStyle="bold"
         android:onClick="btnSignUp"
-
         />
 
 </LinearLayout>

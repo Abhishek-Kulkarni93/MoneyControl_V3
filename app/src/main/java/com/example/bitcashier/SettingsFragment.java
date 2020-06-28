@@ -17,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.bitcashier.helpers.DbHelper;
+import com.example.bitcashier.helpers.PreferencesHelper;
 import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.User;
 
@@ -46,7 +47,10 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
         View settingsView = inflater.inflate(R.layout.fragment_settings, container, false);
 
-        authUser = getAuthorizedUser();
+        PreferencesHelper prefsHelper = new PreferencesHelper(settingsView.getContext());
+        authUser = prefsHelper.getAuthenticatedUser();
+        userCurrencySymbol = prefsHelper.getAuthUserCurrencySymbol();
+
         expenseDB = new DbHelper(settingsView.getContext());
 
         String currentUserCurrency = Currency.getCurrencySpinnerValue(authUser.getCurrency());
@@ -123,12 +127,4 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
         }
     }
 
-    private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        userCurrencySymbol = settings.getString("authusercurrencysymbol", "€");
-        return new User(
-                settings.getString("authusername", null),
-                settings.getString("authuserfullname", null),
-                settings.getString("authusercurrencycode", "EUR"));
-    }
 }

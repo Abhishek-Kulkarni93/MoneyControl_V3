@@ -57,4 +57,11 @@
     <string name="current_threshold">Threshold</string>
     <string name="current_expense">Expense</string>
     <string name="statistics">Statistics</string>
+    <string name="login_user_name_hint">User Name</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_screen_header">User Login</string>
+    <string name="login_screen_app_logo">App Logo</string>
+    <string name="login_screen_sign_up">Sign up</string>
+    <string name="new_user_please_sign_up">New User? Please sign up!</string>
+    <string name="login_screen_login_btn">Login</string>
 </resources>

@@ -49,9 +49,9 @@ public class ExpenseArrayAdapter extends ArrayAdapter<Expense> {
 
         String appPackageName = context.getPackageName();
 
-        SharedPreferences preferences = context.getSharedPreferences(appPackageName+"_preferences", 0);
-        String currencyCode = preferences.getString("authusercurrencycode", "EUR");
-        String currencySymbol = preferences.getString("authusercurrencysymbol", "€");
+        PreferencesHelper prefsHelper = new PreferencesHelper(context);
+        String currencyCode = prefsHelper.getAuthenticatedUser().getCurrency();
+        String currencySymbol = prefsHelper.getAuthUserCurrencySymbol();
 
         TextView tvExpenseTitle = expenseItemCardView.findViewById(R.id.tv_title);
         TextView tvExpenseAmount = expenseItemCardView.findViewById(R.id.tv_amount);

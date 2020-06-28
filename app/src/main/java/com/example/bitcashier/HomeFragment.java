@@ -2,6 +2,7 @@ package com.example.bitcashier;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -15,9 +16,19 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.bitcashier.helpers.DbHelper;
+import com.example.bitcashier.helpers.PreferencesHelper;
 import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.User;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.ArrayList;
 
 
 /**
@@ -27,6 +38,8 @@ public class HomeFragment extends Fragment {
 
     FloatingActionButton fabAddExpense, fabAddIncome;;
     TextView tvUserName, tvTotalIncome, tvTotalExpense, tvTotalBalance;
+    PieChart overviewPieChart;
+
     String userCurrencySymbol = "";
 
     public HomeFragment() {
@@ -47,7 +60,27 @@ public class HomeFragment extends Fragment {
         tvTotalExpense = homeFragmentView.findViewById(R.id.tv_totalExpense);
         tvTotalBalance = homeFragmentView.findViewById(R.id.tv_totalBalance);
 
-        User authUser = getAuthorizedUser();
+        overviewPieChart = homeFragmentView.findViewById(R.id.pie_overviewChart);
+        overviewPieChart.getDescription().setEnabled(false);
+        overviewPieChart.setDragDecelerationFrictionCoef(0.95f);
+        overviewPieChart.setDrawRoundedSlices(true);
+        overviewPieChart.setCenterText("Overview");
+
+        Legend l = overviewPieChart.getLegend();
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        l.setOrientation(Legend.LegendOrientation.VERTICAL);
+        l.setDrawInside(false);
+        l.setXEntrySpace(7f);
+        l.setYEntrySpace(0f);
+        l.setYOffset(0f);
+
+        overviewPieChart.setEntryLabelColor(Color.BLACK);
+
+        PreferencesHelper prefsHelper = new PreferencesHelper(homeFragmentView.getContext());
+        User authUser = prefsHelper.getAuthenticatedUser();
+        userCurrencySymbol = prefsHelper.getAuthUserCurrencySymbol();
+
         tvUserName.setText("Hello, " + authUser.getFullName());
 
         DbHelper expenseDB = new DbHelper(homeFragmentView.getContext());
@@ -85,6 +118,28 @@ public class HomeFragment extends Fragment {
                 loadAddExpenseFragment(v);
             }
         });
+
+        ArrayList<PieEntry> overviewData = new ArrayList<>();
+        overviewData.add(new PieEntry((float) totalIncomeObj.getOtherAmount(), "Income"));
+        overviewData.add(new PieEntry((float) totalExpenseObj.getOtherAmount(), "Expense"));
+        overviewData.add(new PieEntry((float) totalBalanceObj.getOtherAmount(), "Balance"));
+
+        PieDataSet pieDataSet = new PieDataSet(overviewData, "Overview");
+        pieDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+
+        PieData pieData = new PieData(pieDataSet);
+        pieData.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return userCurrencySymbol + String.format("%.2f", value);
+            }
+        });
+        pieData.setValueTextSize(14f);
+        pieData.setValueTextColor(Color.BLACK);
+
+        overviewPieChart.setData(pieData);
+        overviewPieChart.animate();
+
         // Inflate the layout for this fragment
         return homeFragmentView;
     }
@@ -131,12 +186,4 @@ public class HomeFragment extends Fragment {
         alert.show();
     }
 
-    private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        userCurrencySymbol = settings.getString("authusercurrencysymbol", "€");
-        return new User(
-                settings.getString("authusername", null),
-                settings.getString("authuserfullname", null),
-                settings.getString("authusercurrencycode", "EUR"));
-    }
 }

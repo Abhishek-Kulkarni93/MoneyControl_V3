@@ -43,7 +43,7 @@ public class Login extends AppCompatActivity {
     }
 
     public void validateUserEntries(View view) {
-        String userName =editUsername.getText().toString();
+        String userName = editUsername.getText().toString();
         String password = editPassword.getText().toString();
 
 //        startActivity(new Intent(getApplicationContext(), MainActivity.class));

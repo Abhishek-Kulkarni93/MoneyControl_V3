@@ -26,6 +26,7 @@ import com.example.bitcashier.helpers.CategoryItem;
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
 import com.example.bitcashier.helpers.ExpenseArrayAdapter;
+import com.example.bitcashier.helpers.PreferencesHelper;
 import com.example.bitcashier.models.Category;
 import com.example.bitcashier.models.Expense;
 import com.example.bitcashier.models.User;
@@ -58,29 +59,29 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_transaction_history, container, false);
+        View transactionHistoryView = inflater.inflate(R.layout.fragment_transaction_history, container, false);
 
         dateHelper = new DateHelper();
-        DbHelper expenseDB = new DbHelper(view.getContext());
-        appPackageName = view.getContext().getPackageName();
+        DbHelper expenseDB = new DbHelper(transactionHistoryView.getContext());
+        appPackageName = transactionHistoryView.getContext().getPackageName();
 
-        editFromDate = view.findViewById(R.id.editText_fromDate);
-        editToDate = view.findViewById(R.id.editText_toDate);
-        expenseListView = view.findViewById(R.id.lv_expensesList);
-        spinnerCategory = view.findViewById(R.id.spinner_filter_category);
-        spinnerPayment = view.findViewById(R.id.spinner_filter_payment);
-        btnSearchData = view.findViewById(R.id.button_searchData);
-        btnFromDate = view.findViewById(R.id.button_selectFromDate);
-        btnToDate = view.findViewById(R.id.button_selectToDate);
-        btnResetForm = view.findViewById(R.id.button_resetForm);
+        editFromDate = transactionHistoryView.findViewById(R.id.editText_fromDate);
+        editToDate = transactionHistoryView.findViewById(R.id.editText_toDate);
+        expenseListView = transactionHistoryView.findViewById(R.id.lv_expensesList);
+        spinnerCategory = transactionHistoryView.findViewById(R.id.spinner_filter_category);
+        spinnerPayment = transactionHistoryView.findViewById(R.id.spinner_filter_payment);
+        btnSearchData = transactionHistoryView.findViewById(R.id.button_searchData);
+        btnFromDate = transactionHistoryView.findViewById(R.id.button_selectFromDate);
+        btnToDate = transactionHistoryView.findViewById(R.id.button_selectToDate);
+        btnResetForm = transactionHistoryView.findViewById(R.id.button_resetForm);
 
         ArrayList<Category> categoriesList = expenseDB.getCategories();
-        ArrayList<CategoryItem> categoryItemsList = addIconsToCategoryList(view, categoriesList);
-        customCategoryAdapter = new CategoryAdapter(view.getContext(), categoryItemsList);
+        ArrayList<CategoryItem> categoryItemsList = addIconsToCategoryList(transactionHistoryView, categoriesList);
+        customCategoryAdapter = new CategoryAdapter(transactionHistoryView.getContext(), categoryItemsList);
         spinnerCategory.setAdapter(customCategoryAdapter);
         spinnerCategory.setOnItemSelectedListener(this);
 
-        ArrayAdapter<CharSequence> paymentAdapter = ArrayAdapter.createFromResource(view.getContext(),
+        ArrayAdapter<CharSequence> paymentAdapter = ArrayAdapter.createFromResource(transactionHistoryView.getContext(),
                 R.array.payment_type, android.R.layout.simple_spinner_item);
         paymentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPayment.setAdapter(paymentAdapter);
@@ -119,12 +120,6 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Expense expense = (Expense) parent.getAdapter().getItem(position);
 
-//                Toast.makeText(
-//                    view.getContext(),
-//                    "ID: " + expense.getId() + " | Amount: " + expense.getAmount(),
-//                    Toast.LENGTH_LONG
-//                ).show();
-
                 EditExpenseFragment editExpenseFragment = EditExpenseFragment.newInstance(
                         String.valueOf(expense.getId()), "no");
 
@@ -136,11 +131,12 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
             }
         });
 
-        authUser = getAuthorizedUser();
+        authUser = new PreferencesHelper(transactionHistoryView.getContext())
+                .getAuthenticatedUser();
 
-        getExpenseData(view);
+        getExpenseData(transactionHistoryView);
         // Inflate the layout for this fragment
-        return view;
+        return transactionHistoryView;
     }
 
     public ArrayList<CategoryItem> addIconsToCategoryList(View view, ArrayList<Category> categories) {
@@ -154,14 +150,6 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
         }
 
         return categoryItems;
-    }
-
-    private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return new User(
-                settings.getString("authusername", null),
-                settings.getString("authuserfullname", null),
-                settings.getString("authusercurrencycode", "EUR"));
     }
 
     public void setFromDateValue(View view) {

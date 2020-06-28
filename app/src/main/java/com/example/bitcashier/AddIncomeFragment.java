@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
+import com.example.bitcashier.helpers.PreferencesHelper;
 import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.Expense;
 import com.example.bitcashier.models.Income;
@@ -91,7 +92,9 @@ public class AddIncomeFragment extends Fragment {
         View addIncomeView = inflater.inflate(R.layout.fragment_add_income, container, false);
 
         dateHelper = new DateHelper();
-        authUser = getAuthorizedUser();
+
+        authUser = new PreferencesHelper(addIncomeView.getContext())
+                .getAuthenticatedUser();
 
         editAmount = addIncomeView.findViewById(R.id.editText_incomeAmount);
         editDate = addIncomeView.findViewById(R.id.editText_incomeDate);
@@ -121,14 +124,6 @@ public class AddIncomeFragment extends Fragment {
 
         // Inflate the layout for this fragment
         return addIncomeView;
-    }
-
-    private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return new User(
-                settings.getString("authusername", null),
-                settings.getString("authuserfullname", null),
-                settings.getString("authusercurrencycode", "EUR"));
     }
 
     public void setIncomeDate(View view) {

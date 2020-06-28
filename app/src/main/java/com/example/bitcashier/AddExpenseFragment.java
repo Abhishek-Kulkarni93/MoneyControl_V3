@@ -32,6 +32,7 @@ import com.example.bitcashier.helpers.CategoryAdapter;
 import com.example.bitcashier.helpers.CategoryItem;
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
+import com.example.bitcashier.helpers.PreferencesHelper;
 import com.example.bitcashier.models.Category;
 import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.Expense;
@@ -104,9 +105,11 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
 
         View addExpenseView = inflater.inflate(R.layout.fragment_add_expense, container, false);
 
+        authUser = new PreferencesHelper(addExpenseView.getContext())
+                .getAuthenticatedUser();
+
         expenseDB = new DbHelper(addExpenseView.getContext());
         dateHelper = new DateHelper();
-        authUser = getAuthorizedUser();
         appPackageName = addExpenseView.getContext().getPackageName();
 
 
@@ -527,14 +530,6 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
     public void getCategoryThresholdValue() {
         Threshold categoryThreshold = expenseDB.getThresholdValue(authUser.getUsername(), selectedCategory);
         categoryThresholdValue = categoryThreshold.getThreshold_value();
-    }
-
-    private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return new User(
-                settings.getString("authusername", null),
-                settings.getString("authuserfullname", null),
-                settings.getString("authusercurrencycode", "EUR"));
     }
 
     @Override

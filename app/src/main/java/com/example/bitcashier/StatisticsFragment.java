@@ -18,7 +18,9 @@ import android.widget.Toast;
 
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
+import com.example.bitcashier.helpers.PreferencesHelper;
 import com.example.bitcashier.models.CategoryExpense;
+import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.User;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -92,7 +94,10 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
         View statisticsFragmentView = inflater.inflate(R.layout.fragment_statistics, container, false);
         expenseDB = new DbHelper(statisticsFragmentView.getContext());
         dateHelper = new DateHelper();
-        authUser = getAuthorizedUser();
+
+        PreferencesHelper prefsHelper = new PreferencesHelper(statisticsFragmentView.getContext());
+        authUser = prefsHelper.getAuthenticatedUser();
+        userCurrencySymbol = prefsHelper.getAuthUserCurrencySymbol();
 
         expensesPieChart = statisticsFragmentView.findViewById(R.id.pie_expensesChart);
         expensesPieChart.getDescription().setEnabled(false);
@@ -159,14 +164,16 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
 
         if (expenseArrayList.size() > 0) {
             for (CategoryExpense categoryExpense : expenseArrayList) {
-                pieEntries.add(new PieEntry((float) categoryExpense.getAmount(), categoryExpense.getCategory_name()));
+                pieEntries.add(new PieEntry(
+                        (float) new Currency(categoryExpense.getAmount(),authUser.getCurrency())
+                                .getOtherAmount(),
+                        categoryExpense.getCategory_name()
+                ));
             }
 
             PieDataSet pieDataSet = new PieDataSet(pieEntries, "Categories");
-            pieDataSet.setSelectionShift(5f);
 
             // add a lot of colors
-
             ArrayList<Integer> colors = new ArrayList<>();
 
             for (int c : ColorTemplate.VORDIPLOM_COLORS)
@@ -203,7 +210,6 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
                 centerText = "Expenses ("+ userCurrencySymbol +")\n("+ selectedYear +")";
 
             expensesPieChart.setCenterText(new SpannableString( centerText ));
-            expensesPieChart.animate();
             expensesPieChart.setData(pieData);
             expensesPieChart.invalidate();
         } else {
@@ -256,12 +262,4 @@ public class StatisticsFragment extends Fragment implements AdapterView.OnItemSe
 
     }
 
-    private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        userCurrencySymbol = settings.getString("authusercurrencysymbol", "€");
-        return new User(
-                settings.getString("authusername", null),
-                settings.getString("authuserfullname", null),
-                settings.getString("authusercurrencycode", "EUR"));
-    }
 }

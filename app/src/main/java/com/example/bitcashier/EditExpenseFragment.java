@@ -34,6 +34,7 @@ import com.example.bitcashier.helpers.CategoryAdapter;
 import com.example.bitcashier.helpers.CategoryItem;
 import com.example.bitcashier.helpers.DateHelper;
 import com.example.bitcashier.helpers.DbHelper;
+import com.example.bitcashier.helpers.PreferencesHelper;
 import com.example.bitcashier.models.Category;
 import com.example.bitcashier.models.Currency;
 import com.example.bitcashier.models.Expense;
@@ -135,9 +136,11 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
 
         View editExpenseView = inflater.inflate(R.layout.fragment_edit_expense, container, false);
 
+        authUser = new PreferencesHelper(editExpenseView.getContext())
+                .getAuthenticatedUser();
+
         dateHelper = new DateHelper();
         expenseDB = new DbHelper(editExpenseView.getContext());
-        authUser = getAuthorizedUser();
         appPackageName = editExpenseView.getContext().getPackageName();
         selectedExpense = expenseDB.getExpenseById(id);
         ArrayList<Category> categoriesList = expenseDB.getCategories();
@@ -686,11 +689,4 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
                 .commit();
     }
 
-    private User getAuthorizedUser() {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        return new User(
-                settings.getString("authusername", null),
-                settings.getString("authuserfullname", null),
-                settings.getString("authusercurrencycode", "EUR"));
-    }
 }
