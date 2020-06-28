@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:id="@+id/tv_originalCurrency"
-                android:text="EUR (€)"
+                android:text="XC: $1458.71"
                 android:textStyle="bold"
                 android:textSize="15sp"
                 android:gravity="end"/>

@@ -56,17 +56,26 @@ public class ExpenseArrayAdapter extends ArrayAdapter<Expense> {
         TextView tvExpenseTitle = expenseItemCardView.findViewById(R.id.tv_title);
         TextView tvExpenseAmount = expenseItemCardView.findViewById(R.id.tv_amount);
         TextView tvExpenseDate = expenseItemCardView.findViewById(R.id.tv_date);
+        TextView tvOriginalCurrency = expenseItemCardView.findViewById(R.id.tv_originalCurrency);
         ImageView ivExpenseCategory = expenseItemCardView.findViewById(R.id.img_category);
+
+        tvExpenseTitle.setText(expense.getTitle());
 
         String title = expense.getTitle();
         if (expense.getCategory().equals("Friend") && !expense.getContact_name().isEmpty()) {
             title += " ("+ expense.getContact_name() +")";
         }
         Currency expenseAmountObj = new Currency(expense.getAmount(), currencyCode);
-
-        tvExpenseTitle.setText(expense.getTitle());
         tvExpenseAmount.setText(currencySymbol+ String.format("%.2f", expenseAmountObj.getOtherAmount()));
+
         tvExpenseDate.setText(expense.getDateInDisplayFormat());
+
+        tvOriginalCurrency.setText("");
+        if (!prefsHelper.getAuthenticatedUser().getCurrency().equals(expense.getCurrency())) {
+            Currency originalExpenseAmountObj = new Currency(expense.getAmount(), expense.getCurrency());
+            String originalCurrencySymbol = Currency.getCurrencySymbol(expense.getCurrency());
+            tvOriginalCurrency.setText("XC: " + originalCurrencySymbol+ String.format("%.2f", originalExpenseAmountObj.getOtherAmount()));
+        }
 
         int categoryImageId = context.getResources()
                 .getIdentifier(appPackageName+":drawable/"+xpCategoryData.getCategory_image() , null, null);

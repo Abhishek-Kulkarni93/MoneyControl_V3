@@ -119,26 +119,28 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        ArrayList<PieEntry> overviewData = new ArrayList<>();
-        overviewData.add(new PieEntry((float) totalIncomeObj.getOtherAmount(), "Income"));
-        overviewData.add(new PieEntry((float) totalExpenseObj.getOtherAmount(), "Expense"));
-        overviewData.add(new PieEntry((float) totalBalanceObj.getOtherAmount(), "Balance"));
+        if (userTotalIncome > 0 && userTotalExpense > 0) {
+            ArrayList<PieEntry> overviewData = new ArrayList<>();
+            overviewData.add(new PieEntry((float) totalIncomeObj.getOtherAmount(), "Income"));
+            overviewData.add(new PieEntry((float) totalExpenseObj.getOtherAmount(), "Expense"));
+            overviewData.add(new PieEntry((float) totalBalanceObj.getOtherAmount(), "Balance"));
 
-        PieDataSet pieDataSet = new PieDataSet(overviewData, "Overview");
-        pieDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
+            PieDataSet pieDataSet = new PieDataSet(overviewData, "Overview");
+            pieDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
 
-        PieData pieData = new PieData(pieDataSet);
-        pieData.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value) {
-                return userCurrencySymbol + String.format("%.2f", value);
-            }
-        });
-        pieData.setValueTextSize(14f);
-        pieData.setValueTextColor(Color.BLACK);
+            PieData pieData = new PieData(pieDataSet);
+            pieData.setValueFormatter(new ValueFormatter() {
+                @Override
+                public String getFormattedValue(float value) {
+                    return userCurrencySymbol + String.format("%.2f", value);
+                }
+            });
+            pieData.setValueTextSize(14f);
+            pieData.setValueTextColor(Color.BLACK);
 
-        overviewPieChart.setData(pieData);
-        overviewPieChart.animate();
+            overviewPieChart.setData(pieData);
+            overviewPieChart.animateX(2000);
+        }
 
         // Inflate the layout for this fragment
         return homeFragmentView;

@@ -11,10 +11,12 @@ public class Expense {
     public static final String CATEGORY = "CATEGORY";
     public static final String CONTACT_NAME = "CONTACT_NAME";
     public static final String PAYMENT_TYPE = "PAYMENT_TYPE";
+    public static final String CURRENCY = "CURRENCY";
     public static final String RECURRING = "RECURRING";
     public static final String USER_NAME = "USER_NAME";
 
-    public static final String CREATE_EXPENSE_TABLE = "CREATE TABLE IF NOT EXISTS " + EXPENSE_TABLE + " ("+ID +" INTEGER PRIMARY KEY AUTOINCREMENT,"+ AMOUNT +" DOUBLE NOT NULL,"+ TITLE +" TEXT NOT NULL,"+ DATE +" TEXT NOT NULL,"+ CATEGORY +" TEXT NOT NULL,"+ CONTACT_NAME +" TEXT,"+ PAYMENT_TYPE +" TEXT NOT NULL,"+ NOTES +" TEXT,"+ RECURRING +" TEXT DEFAULT 'no',"+ USER_NAME +" TEXT NOT NULL) ";
+    public static final String CREATE_EXPENSE_TABLE = "CREATE TABLE IF NOT EXISTS " + EXPENSE_TABLE + " ("+ID +" INTEGER PRIMARY KEY AUTOINCREMENT,"+ AMOUNT +" DOUBLE NOT NULL,"+ TITLE +" TEXT NOT NULL,"+ DATE +" TEXT NOT NULL,"+ CATEGORY +" TEXT NOT NULL,"+ CONTACT_NAME +" TEXT,"+ PAYMENT_TYPE +" TEXT NOT NULL,"+ NOTES +" TEXT,"+ CURRENCY +" TEXT DEFAULT 'EUR',"+ RECURRING +" TEXT DEFAULT 'no',"+ USER_NAME +" TEXT NOT NULL) ";
+
     public static final String GET_USER_EXPENSES_QUERY = "SELECT * FROM "+ EXPENSE_TABLE +" WHERE "+ USER_NAME +" = ? COLLATE NOCASE";
     public static final String GET_EXPENSE_BY_ID_QUERY = "SELECT * FROM "+ EXPENSE_TABLE +" WHERE "+ ID +" = ?";
     public static final String USER_EXPENSE_SUM_QUERY = "SELECT SUM("+ AMOUNT +") FROM " + EXPENSE_TABLE +" WHERE "+ USER_NAME +" = ? COLLATE NOCASE";
@@ -28,6 +30,7 @@ public class Expense {
     private String contact_name;
     private String notes;
     private String payment_type;
+    private String currency;
     private String recurring;
     private String user_name;
 
@@ -35,7 +38,7 @@ public class Expense {
         // Empty constructor..
     }
 
-    public Expense(double amount, String title, String date, String category, String payment_type, String notes, String recurring, String user_name, String contact_name) {
+    public Expense(double amount, String title, String date, String category, String payment_type, String notes, String recurring, String user_name, String contact_name, String currency) {
         this.amount = amount;
         this.title = title;
         this.date = date;
@@ -45,6 +48,7 @@ public class Expense {
         this.recurring = recurring;
         this.user_name = user_name;
         this.contact_name = contact_name;
+        this.currency = currency;
     }
 
     public int getId() {
@@ -125,6 +129,14 @@ public class Expense {
 
     public void setContact_name(String contact_name) {
         this.contact_name = contact_name;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     // Format --- 2020-05-16

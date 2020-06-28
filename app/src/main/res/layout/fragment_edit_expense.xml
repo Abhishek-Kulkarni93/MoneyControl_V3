@@ -72,6 +72,27 @@
             android:inputType="numberSigned|number|numberDecimal"
             android:text="" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Currency"
+                android:textSize="17sp" />
+
+            <Spinner
+                android:id="@+id/spinner_editExpCurrency"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="5dp" />
+
+        </LinearLayout>
+
         <EditText
             android:id="@+id/editText_editTitle"
             android:layout_width="match_parent"

@@ -276,6 +276,7 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(Expense.RECURRING, expenseData.getRecurring());
         contentValues.put(Expense.PAYMENT_TYPE, expenseData.getPayment_type());
         contentValues.put(Expense.USER_NAME, expenseData.getUserName());
+        contentValues.put(Expense.CURRENCY, expenseData.getCurrency());
         long result = db.insert(Expense.EXPENSE_TABLE, null, contentValues);
 
         return result != -1;
@@ -347,6 +348,7 @@ public class DbHelper extends SQLiteOpenHelper {
          * Table Index 6 -- notes
          * Table Index 7 -- recurring
          * Table Index 8 -- user_name
+         * Table Index 9 -- currency
          * */
         while (resultCursor.moveToNext()) {
             Expense expenseData = new Expense(
@@ -358,7 +360,8 @@ public class DbHelper extends SQLiteOpenHelper {
                     resultCursor.getString(resultCursor.getColumnIndex(Expense.NOTES)),
                     resultCursor.getString(resultCursor.getColumnIndex(Expense.RECURRING)),
                     resultCursor.getString(resultCursor.getColumnIndex(Expense.USER_NAME)),
-                    resultCursor.getString(resultCursor.getColumnIndex(Expense.CONTACT_NAME))
+                    resultCursor.getString(resultCursor.getColumnIndex(Expense.CONTACT_NAME)),
+                    resultCursor.getString(resultCursor.getColumnIndex(Expense.CURRENCY))
             );
 
             expenseData.setId(resultCursor.getInt(resultCursor.getColumnIndex(Expense.ID)));
@@ -419,6 +422,7 @@ public class DbHelper extends SQLiteOpenHelper {
             expense.setRecurring(resultCursor.getString(resultCursor.getColumnIndex(Expense.RECURRING)));
             expense.setUserName(resultCursor.getString(resultCursor.getColumnIndex(Expense.USER_NAME)));
             expense.setContact_name(resultCursor.getString(resultCursor.getColumnIndex(Expense.CONTACT_NAME)));
+            expense.setCurrency(resultCursor.getString(resultCursor.getColumnIndex(Expense.CURRENCY)));
         }
 
         resultCursor.close();
@@ -439,6 +443,7 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(Expense.RECURRING, expenseData.getRecurring());
         contentValues.put(Expense.PAYMENT_TYPE, expenseData.getPayment_type());
         contentValues.put(Expense.USER_NAME, expenseData.getUserName());
+        contentValues.put(Expense.CURRENCY, expenseData.getCurrency());
 
         String whereClause = Expense.ID+" = ?";
         String[] whereArgs = {String.valueOf(expenseData.getId())};

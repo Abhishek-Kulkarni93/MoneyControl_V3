@@ -82,10 +82,10 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
     EditText editAmount, editTitle, editDate, editComment, editContact;
     Button btnSelectDate, btnAddData;
     ImageButton btnAddNewCategory, btnStyleNotes, btnOpenContacts;
-    Spinner spinnerCategory, spinnerPaymentType;
+    Spinner spinnerCategory, spinnerPaymentType, spinnerExpenseCurrency;
     Switch switchRecurring;
 
-    String selectedDate = "", selectedCategory = "", selectedPaymentType = "";
+    String selectedDate = "", selectedCategory = "", selectedPaymentType = "", selectedExpCurrency = "";
     DateHelper dateHelper;
     User authUser;
     DbHelper expenseDB;
@@ -105,8 +105,9 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
 
         View addExpenseView = inflater.inflate(R.layout.fragment_add_expense, container, false);
 
-        authUser = new PreferencesHelper(addExpenseView.getContext())
-                .getAuthenticatedUser();
+        PreferencesHelper prefsHelper = new PreferencesHelper(addExpenseView.getContext());
+        authUser = prefsHelper.getAuthenticatedUser();
+        String userCurrencyName = Currency.getCurrencySpinnerValue(authUser.getCurrency());
 
         expenseDB = new DbHelper(addExpenseView.getContext());
         dateHelper = new DateHelper();
@@ -124,6 +125,7 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         btnStyleNotes = addExpenseView.findViewById(R.id.button_styleNotes);
         spinnerCategory = addExpenseView.findViewById(R.id.spinner_category);
         spinnerPaymentType = addExpenseView.findViewById(R.id.spinner_paymentType);
+        spinnerExpenseCurrency = addExpenseView.findViewById(R.id.spinner_expCurrency);
 
         editDate.setText(dateHelper.getCurrDateInDisplayFormat());
         selectedDate = dateHelper.getCurrDateInStoreFormat();
@@ -144,6 +146,13 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         paymentTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPaymentType.setAdapter(paymentTypeAdapter);
         spinnerPaymentType.setOnItemSelectedListener(this);
+
+        ArrayAdapter<CharSequence> expCurrencyAdapter = ArrayAdapter.createFromResource(addExpenseView.getContext(),
+                R.array.currency, android.R.layout.simple_spinner_item);
+        expCurrencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerExpenseCurrency.setAdapter(expCurrencyAdapter);
+        spinnerExpenseCurrency.setOnItemSelectedListener(this);
+        spinnerExpenseCurrency.setSelection(expCurrencyAdapter.getPosition(userCurrencyName));
 
         btnAddNewCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -402,12 +411,12 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
 
         String contactName = (selectedCategory.equals("Friend")) ? editContact.getText().toString() : "";
 
-        if(!amountString.isEmpty() && !date.isEmpty() && !selectedCategory.isEmpty() && !selectedPaymentType.isEmpty()) {
+        if(!amountString.isEmpty() && !date.isEmpty() && !selectedCategory.isEmpty() && !selectedPaymentType.isEmpty() && !selectedExpCurrency.isEmpty()) {
             try {
                 amount = Double.parseDouble(amountString);
                 if(amount < 100000) {
-                    Currency expenseAmountObj = new Currency(amount, authUser.getCurrency());
-                    Expense newExpense = new Expense(expenseAmountObj.getEuroAmount(), title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, authUser.getUsername(), contactName);
+                    Currency expenseAmountObj = new Currency(amount, Currency.getCurrencyCode(selectedExpCurrency));
+                    Expense newExpense = new Expense(expenseAmountObj.getEuroAmount(), title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, authUser.getUsername(), contactName, Currency.getCurrencyCode(selectedExpCurrency));
                     boolean isInserted =  expenseDB.insertData(newExpense);
                     if(isInserted) {
                         Toast.makeText(view.getContext(),"Expense added successfully", Toast.LENGTH_LONG).show();
@@ -517,12 +526,16 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
                 getCategoryThresholdValue();
             } else if (parent.getId() == R.id.spinner_paymentType) {
                 selectedPaymentType = parent.getItemAtPosition(position).toString();
+            } else if (parent.getId() == R.id.spinner_expCurrency) {
+                selectedExpCurrency = parent.getItemAtPosition(position).toString();
             }
         } else {
             if (parent.getId() == R.id.spinner_category) {
                 selectedCategory = "";
             } else if (parent.getId() == R.id.spinner_paymentType) {
                 selectedPaymentType = "";
+            } else if (parent.getId() == R.id.spinner_expCurrency) {
+                selectedExpCurrency = "";
             }
         }
     }
