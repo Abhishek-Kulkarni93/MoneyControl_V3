@@ -139,7 +139,7 @@ public class HomeFragment extends Fragment {
             pieData.setValueTextColor(Color.BLACK);
 
             overviewPieChart.setData(pieData);
-            overviewPieChart.animateX(2000);
+            overviewPieChart.animateX(1500);
         }
 
         // Inflate the layout for this fragment

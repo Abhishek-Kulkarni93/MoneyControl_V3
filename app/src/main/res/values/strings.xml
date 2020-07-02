@@ -64,4 +64,40 @@
     <string name="login_screen_sign_up">Sign up</string>
     <string name="new_user_please_sign_up">New User? Please sign up!</string>
     <string name="login_screen_login_btn">Login</string>
+    <string name="export_data_btn">Export Data</string>
+    <string name="fab_export_data">Export Data</string>
+
+    <string-array name="settings_fragment">
+        <item>Help</item>
+        <item>About</item>
+        <item>Language</item>
+    </string-array>
+
+    <string-array name="help_QnA">
+
+        <item>How do I change the currency of an expense</item>
+        <item>Can I set a default currency?</item>
+        <item>Can BitCashier do currency conversion between multiple currencies?</item>
+        <item>What if BitCashier does not include my currency?</item>
+        <item>How do I use Bitcashier?</item>
+        <item>Why do I have to add contacts while I add expense? Can I add a friend without an email address or phone number?</item>
+        <item>How do I export my transactions to a spreadsheet or Excel?</item>
+        <item>Help, I can not log in to my account!</item>
+        <item>Is there a Bitcashier app for Windows Phone?</item>
+        <item>Why is not my password working?</item>
+        <item>How do I create a recurring expense?</item>
+        <item>How do I Update an expense?</item>
+        <item>How do I Delete an expense?</item>
+        <item>How can I delete a recurring transaction?</item>
+        <item>Where can I view the monthly or yearly expenses?</item>
+
+
+    </string-array>
+
+
+    <!--    <string name="settings_help_btn">Help</string>-->
+    <!--    <string name="settings_about_btn">About</string>-->
+    <!--    <string name="settings_language_btn">Language</string>-->
+
+
 </resources>

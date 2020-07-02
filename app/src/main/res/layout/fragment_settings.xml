@@ -6,6 +6,7 @@
     tools:context=".SettingsFragment">
 
     <LinearLayout
+        android:id="@+id/settings_currency"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
@@ -29,5 +30,49 @@
             />
 
     </LinearLayout>
+
+
+    <!--<Button
+        android:id="@+id/btn_settingsHelp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_help_btn"
+        android:textAlignment="center"
+        android:layout_marginTop="100dp"/>
+
+    <Button
+        android:id="@+id/btn_settingsAbout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_about_btn"
+        android:textAlignment="center"
+        android:layout_marginTop="160dp"/>
+
+    <Button
+        android:id="@+id/btn_settingsLanguage"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:text="@string/settings_language_btn"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="220dp"/>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        >
+
+        <ListView
+            android:id="@+id/settings_listView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF">
+
+
+        </ListView>
+
+    </LinearLayout>
+
 
 </FrameLayout>

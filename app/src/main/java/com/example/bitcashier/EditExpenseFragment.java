@@ -674,12 +674,14 @@ public class EditExpenseFragment extends Fragment implements AdapterView.OnItemS
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 //Action for "Okay".
+                returnToTransactionHistory();
             }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Action for "Cancel".
+                returnToTransactionHistory();
             }
         });
 

@@ -1,5 +1,6 @@
 package com.example.bitcashier;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -12,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -35,6 +38,8 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     String selectedCurrency = "", selectedCurrencySymbol = "", userCurrencySymbol = "";
     User authUser;
     DbHelper expenseDB;
+    Button btnHelp, btnAbout, btnLanguage;
+    ListView settingsListView;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -45,7 +50,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View settingsView = inflater.inflate(R.layout.fragment_settings, container, false);
+        final View settingsView = inflater.inflate(R.layout.fragment_settings, container, false);
 
         PreferencesHelper prefsHelper = new PreferencesHelper(settingsView.getContext());
         authUser = prefsHelper.getAuthenticatedUser();
@@ -57,6 +62,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
         spinnerChangeCurrency = settingsView.findViewById(R.id.spinner_changeCurrency);
         imageBtnChangeCurrency = settingsView.findViewById(R.id.button_changeCurrency);
+        settingsListView = settingsView.findViewById(R.id.settings_listView);
 
         ArrayAdapter<CharSequence> currencyAdapter = ArrayAdapter.createFromResource(settingsView.getContext(),
                 R.array.currency, android.R.layout.simple_spinner_item);
@@ -69,6 +75,19 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
             @Override
             public void onClick(View v) {
                 changeUserCurrency();
+            }
+        });
+
+        ArrayAdapter<String> settingAdapter =  new ArrayAdapter<String>(settingsView.getContext() ,android.R.layout.simple_list_item_1,
+                getResources().getStringArray(R.array.settings_fragment));
+        settingsListView.setAdapter(settingAdapter);
+        settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent= new Intent(settingsListView.getContext(), HelpActivity.class);
+                intent.putExtra("HELP", settingsListView.getItemIdAtPosition(position)).toString();
+                //intent.putExtra("About", settingsListView.getItemIdAtPosition(1));
+                startActivity(intent);
             }
         });
 

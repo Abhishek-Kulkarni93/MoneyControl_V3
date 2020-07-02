@@ -2,7 +2,6 @@ package com.example.bitcashier;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
@@ -10,7 +9,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.preference.PreferenceManager;
 
 import android.text.Spannable;
 import android.text.style.StyleSpan;
@@ -425,12 +423,7 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
                         if(categoryThresholdValue > 0 && userTotalExpenseForCategory > categoryThresholdValue) {
                             showThresholdDialog(view);
                         } else {
-                            HomeFragment homeFragment = new HomeFragment();
-                            FragmentManager manager = getParentFragmentManager();
-                            manager.beginTransaction()
-                                    .replace(R.id.navHostFragment,homeFragment)
-                                    .addToBackStack(null)
-                                    .commit();
+                            returnToHomeFragment();
                         }
                     } else {
                         Toast.makeText(view.getContext(),"Expense was not added due to errors", Toast.LENGTH_LONG).show();
@@ -455,12 +448,14 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 //Action for "Okay".
+                returnToHomeFragment();
             }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Action for "Cancel".
+                returnToHomeFragment();
             }
         });
 
@@ -538,6 +533,15 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
                 selectedExpCurrency = "";
             }
         }
+    }
+
+    public void returnToHomeFragment() {
+        HomeFragment homeFragment = new HomeFragment();
+        FragmentManager manager = getParentFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.navHostFragment,homeFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     public void getCategoryThresholdValue() {

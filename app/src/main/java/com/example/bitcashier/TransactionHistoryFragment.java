@@ -1,9 +1,14 @@
 package com.example.bitcashier;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
@@ -30,7 +35,10 @@ import com.example.bitcashier.helpers.PreferencesHelper;
 import com.example.bitcashier.models.Category;
 import com.example.bitcashier.models.Expense;
 import com.example.bitcashier.models.User;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 
@@ -42,6 +50,7 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
     ListView expenseListView;
     Spinner spinnerCategory, spinnerPayment;
     EditText editFromDate, editToDate;
+    FloatingActionButton fabExportData;
     Button btnSearchData, btnFromDate, btnToDate, btnResetForm;
 
     String selectedCategory = "", selectedPayment = "", selectedFromDate = "", selectedToDate = "";
@@ -74,6 +83,7 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
         btnFromDate = transactionHistoryView.findViewById(R.id.button_selectFromDate);
         btnToDate = transactionHistoryView.findViewById(R.id.button_selectToDate);
         btnResetForm = transactionHistoryView.findViewById(R.id.button_resetForm);
+        fabExportData = transactionHistoryView.findViewById(R.id.fab_exportData);
 
         ArrayList<Category> categoriesList = expenseDB.getCategories();
         ArrayList<CategoryItem> categoryItemsList = addIconsToCategoryList(transactionHistoryView, categoriesList);
@@ -115,6 +125,13 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
             }
         });
 
+        fabExportData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                export(v);
+            }
+        });
+
         expenseListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -135,6 +152,7 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
                 .getAuthenticatedUser();
 
         getExpenseData(transactionHistoryView);
+        //export(transactionHistoryView);
         // Inflate the layout for this fragment
         return transactionHistoryView;
     }
@@ -214,6 +232,7 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
         spinnerPayment.setSelection(0);
 
         getExpenseData(view);
+        //export(view);
     }
 
     public void getExpenseData(View view) {
@@ -227,6 +246,71 @@ public class TransactionHistoryFragment extends Fragment implements AdapterView.
             Toast.makeText(view.getContext(),"No expenses found", Toast.LENGTH_LONG).show();
         }
     }
+
+    public static String toCSV(String[] array) {
+        String result = "";
+        if (array.length > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (String s : array) {
+                sb.append(s.trim()).append(",");
+                //sb.append(s.trim());
+            }
+            result = sb.deleteCharAt(sb.length() - 1).toString();
+        }
+        return result;
+    }
+
+    public void export (View view) {
+        DbHelper expenseDB = new DbHelper(view.getContext());
+
+        ArrayList<Expense> expensesList = expenseDB.loadExpenseData(authUser.getUsername(), selectedCategory, selectedPayment, selectedFromDate, selectedToDate);
+        ExpenseArrayAdapter expenseAdapter = new ExpenseArrayAdapter(view.getContext(), R.layout.card_view_row_item, expensesList);
+        expenseListView.setAdapter(expenseAdapter);
+
+        //header for CSV file
+        String csvData = "Title,Category,Amount,Date,Payment type,isRecurring,Username" + "\n";
+
+        for (int i = 0; i < expensesList.size(); i++)
+        {
+            String currentLIne = expensesList.get(i).toString() ;
+            String[] cells = currentLIne.split("\\|");
+            String[] newcells = new String[7];
+            newcells[0] = cells[1];
+            newcells[1] = cells[2];
+            newcells[2] = cells[3];
+            newcells[3] = cells[4];
+            newcells[4] = cells[6];
+            newcells[5] = cells[7];
+            newcells[6] = cells[8];
+            csvData += toCSV(newcells) + "\n";
+        }
+
+        if (csvData.length() == 0) {
+            Toast.makeText(view.getContext(), "No expenses found", Toast.LENGTH_LONG).show();
+        } else {
+            try {
+                // saving the file into device
+                FileOutputStream out = getContext().openFileOutput("data.csv", Context.MODE_PRIVATE);
+                out.write((csvData.toString()).getBytes());
+                out.close();
+
+                //exporting
+                File filelocation = new File(getContext().getFilesDir(), "data.csv");
+                Uri path = FileProvider.getUriForFile(getContext(), "com.example.bitcashier.fileprovider", filelocation);
+                Intent fileIntent = new Intent(Intent.ACTION_SEND);
+                fileIntent.setType("text/csv");
+                fileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                fileIntent.putExtra(Intent.EXTRA_STREAM, path);
+                startActivity(Intent.createChooser(fileIntent, "Send Data"));
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
     tools:context=".TransactionHistoryFragment">
 
     <LinearLayout
@@ -113,13 +115,33 @@
 
         </LinearLayout>
 
-        <ListView
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ListView
             android:id="@+id/lv_expensesList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="20dp" />
 
+        </LinearLayout>
+
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_exportData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="50dp"
+        android:backgroundTint="#00BCD4"
+        android:contentDescription="@string/fab_export_data"
+        android:src="@drawable/ic_baseline_save_alt_24"
+        app:fabSize="auto"
+        app:tint="@color/colorWhite" />
 
 
 </FrameLayout>
