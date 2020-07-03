@@ -68,7 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:ems="10"
-            android:hint="Amount (max 5 digits)"
+            android:hint="Amount (max 1000000)"
             android:inputType="numberSigned|number|numberDecimal"
             android:text="" />
 

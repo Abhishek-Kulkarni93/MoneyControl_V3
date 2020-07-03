@@ -412,7 +412,7 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
         if(!amountString.isEmpty() && !date.isEmpty() && !selectedCategory.isEmpty() && !selectedPaymentType.isEmpty() && !selectedExpCurrency.isEmpty()) {
             try {
                 amount = Double.parseDouble(amountString);
-                if(amount < 100000) {
+                if(amount < 1000000) {
                     Currency expenseAmountObj = new Currency(amount, Currency.getCurrencyCode(selectedExpCurrency));
                     Expense newExpense = new Expense(expenseAmountObj.getEuroAmount(), title, selectedDate, selectedCategory, selectedPaymentType, comment, recurring, authUser.getUsername(), contactName, Currency.getCurrencyCode(selectedExpCurrency));
                     boolean isInserted =  expenseDB.insertData(newExpense);
@@ -429,7 +429,7 @@ public class AddExpenseFragment extends Fragment implements AdapterView.OnItemSe
                         Toast.makeText(view.getContext(),"Expense was not added due to errors", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(view.getContext(),"Amount cannot be greater than 5 digits", Toast.LENGTH_LONG).show();
+                    Toast.makeText(view.getContext(),"Amount cannot be greater than 1000000", Toast.LENGTH_LONG).show();
                 }
             } catch (NumberFormatException e) {
                 Toast.makeText(view.getContext(),"Please enter only numbers", Toast.LENGTH_LONG).show();

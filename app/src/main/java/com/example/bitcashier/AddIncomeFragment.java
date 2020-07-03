@@ -173,7 +173,7 @@ public class AddIncomeFragment extends Fragment {
         if(!amountString.isEmpty() && !date.isEmpty()) {
             try {
                 amount = Double.parseDouble(amountString);
-                if(amount < 100000) {
+                if(amount < 1000000) {
                     Currency incomeAmountObj = new Currency(amount, authUser.getCurrency());
                     Income newUserIncome = new Income(incomeAmountObj.getEuroAmount(), selectedDate, notes, authUser.getUsername());
                     boolean isInserted =  expenseDB.insertUserIncome(newUserIncome);
@@ -194,7 +194,7 @@ public class AddIncomeFragment extends Fragment {
                                 Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(view.getContext(),"Amount cannot be greater than 5 digits", Toast.LENGTH_LONG).show();
+                    Toast.makeText(view.getContext(),"Amount cannot be greater than 1000000", Toast.LENGTH_LONG).show();
                 }
             } catch (NumberFormatException e) {
                 Toast.makeText(view.getContext(),"Please enter only numbers", Toast.LENGTH_LONG).show();

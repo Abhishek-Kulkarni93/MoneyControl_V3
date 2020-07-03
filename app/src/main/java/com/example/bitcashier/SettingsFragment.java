@@ -38,7 +38,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
     String selectedCurrency = "", selectedCurrencySymbol = "", userCurrencySymbol = "";
     User authUser;
     DbHelper expenseDB;
-    Button btnHelp, btnAbout, btnLanguage;
+    Button btnHelp, btnAbout;
     ListView settingsListView;
 
     public SettingsFragment() {
@@ -62,7 +62,23 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
 
         spinnerChangeCurrency = settingsView.findViewById(R.id.spinner_changeCurrency);
         imageBtnChangeCurrency = settingsView.findViewById(R.id.button_changeCurrency);
-        settingsListView = settingsView.findViewById(R.id.settings_listView);
+        btnHelp =settingsView.findViewById(R.id.btn_settingsHelp);
+        btnAbout=settingsView.findViewById(R.id.btn_settingsAbout);
+        btnHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickHelp();
+            }
+        });
+
+        btnAbout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickAbout();
+            }
+        });
+
+        //settingsListView = settingsView.findViewById(R.id.settings_listView);
 
         ArrayAdapter<CharSequence> currencyAdapter = ArrayAdapter.createFromResource(settingsView.getContext(),
                 R.array.currency, android.R.layout.simple_spinner_item);
@@ -78,18 +94,18 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
             }
         });
 
-        ArrayAdapter<String> settingAdapter =  new ArrayAdapter<String>(settingsView.getContext() ,android.R.layout.simple_list_item_1,
-                getResources().getStringArray(R.array.settings_fragment));
-        settingsListView.setAdapter(settingAdapter);
-        settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent= new Intent(settingsListView.getContext(), HelpActivity.class);
-                intent.putExtra("HELP", settingsListView.getItemIdAtPosition(position)).toString();
-                //intent.putExtra("About", settingsListView.getItemIdAtPosition(1));
-                startActivity(intent);
-            }
-        });
+//        ArrayAdapter<String> settingAdapter =  new ArrayAdapter<String>(settingsView.getContext() ,android.R.layout.simple_list_item_1,
+//                getResources().getStringArray(R.array.settings_fragment));
+//        settingsListView.setAdapter(settingAdapter);
+//        settingsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent= new Intent(settingsListView.getContext(), HelpActivity.class);
+//                intent.putExtra("HELP", settingsListView.getItemIdAtPosition(position)).toString();
+//                //intent.putExtra("About", settingsListView.getItemIdAtPosition(1));
+//                startActivity(intent);
+//            }
+//        });
 
         // Inflate the layout for this fragment
         return settingsView;
@@ -116,6 +132,18 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemSele
                     Toast.LENGTH_LONG).show();
         }
     }
+
+    public void onClickHelp (){
+        //startActivity(new Intent(getApplicationContext(), HelpActivity.class));
+        Intent intent = new Intent(btnHelp.getContext(),HelpActivity.class);
+        startActivity(intent);
+    }
+    public void onClickAbout (){
+        //startActivity(new Intent(getApplicationContext(), HelpActivity.class));
+        Intent intent = new Intent(btnAbout.getContext(),AboutAppActivity.class);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

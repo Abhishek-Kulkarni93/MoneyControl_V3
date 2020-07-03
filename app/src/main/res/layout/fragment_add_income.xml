@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:ems="10"
-            android:hint="Income Amount (max 5 digits)"
+            android:hint="Income Amount (max 1000000)"
             android:inputType="numberSigned|number|numberDecimal"
             android:text="" />
 

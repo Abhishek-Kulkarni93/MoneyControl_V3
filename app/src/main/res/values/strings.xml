@@ -70,7 +70,7 @@
     <string-array name="settings_fragment">
         <item>Help</item>
         <item>About</item>
-        <item>Language</item>
+
     </string-array>
 
     <string-array name="help_QnA">
@@ -95,9 +95,19 @@
     </string-array>
 
 
-    <!--    <string name="settings_help_btn">Help</string>-->
-    <!--    <string name="settings_about_btn">About</string>-->
-    <!--    <string name="settings_language_btn">Language</string>-->
+       <string name="settings_help_btn">Help</string>
+       <string name="settings_about_btn">About</string>
+
+
+    <string name="about_home"> This is the home fragment where the user can get an overlook of his account. It will display the total income, total expense and the remaining balance of the user</string>
+    <string name="about_sidenavigation"> The side navigation pane gives a overall view of the app. The user can select any of the options available depending on their requirement</string>
+    <string name="about_addexpense">  In the Add expense page, all the fields are mandatory except the recurring transaction button and the notes. Here, the user should enter all the mandatory details and click on add expense to add a transaction</string>
+    <string name="about_addincome"> In the Add income page, user needs to enter all the details related to their source of income. Once entered the amount and the  notes , user should click on Add income to add it into the total income</string>
+    <string name="about_transactionhistory"> Transaction history page has various functionality. It can be used to view the transaction history through various filters like category, payment type and date. It can also be used to update or delete the transaction by selecting that particular transaction</string>
+    <string name="about_statistics"> Statistics page is used to view the total expenses done in a month or year for each category , by selecting the respective filters</string>
+    <string name="about_threshold"> Add threshold page is used for maintaining budget for each category by setting up a threshold value for the respective category</string>
+
+
 
 
 </resources>

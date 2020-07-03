@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AboutAppActivity"
+    android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Home Page"
+                android:textColor="#FFFFFF"
+                android:textAlignment="center"
+                android:background="@color/colorPrimaryDark"
+                android:textStyle="bold">
+
+            </TextView>
+
+            <ImageView
+                android:id="@+id/app_home"
+                android:layout_width="200dp"
+                android:layout_gravity="center"
+                android:layout_height="400dp"
+                android:src="@drawable/app_home">
+
+            </ImageView>
+            <TextView
+                android:id="@+id/about_home"
+                android:layout_width="match_parent"
+                android:layout_height="300dp">
+            </TextView>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="100dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Side Navigation"
+                android:textColor="#FFFFFF"
+                android:textAlignment="center"
+                android:background="@color/colorPrimaryDark"
+                android:textStyle="bold">
+
+            </TextView>
+            <ImageView
+                android:id="@+id/app_sieNavigation"
+                android:layout_width="200dp"
+                android:layout_gravity="center"
+                android:layout_height="400dp"
+                android:src="@drawable/sidenavigatoin">
+
+            </ImageView>
+            <TextView
+                android:id="@+id/about_sidenavigation"
+                android:layout_width="match_parent"
+                android:layout_height="300dp">
+
+            </TextView>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Expense Page"
+                android:textColor="#FFFFFF"
+                android:textAlignment="center"
+                android:background="@color/colorPrimaryDark"
+                android:textStyle="bold">
+
+            </TextView>
+            <ImageView
+                android:id="@+id/app_addExpense"
+                android:layout_width="200dp"
+                android:layout_gravity="center"
+                android:layout_height="400dp"
+                android:src="@drawable/app_add_expense">
+
+            </ImageView>
+            <TextView
+                android:id="@+id/about_addexpense"
+                android:layout_width="match_parent"
+                android:layout_height="300dp">
+
+            </TextView>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFF"
+                android:textAlignment="center"
+                android:background="@color/colorPrimaryDark"
+                android:text="Add Income Page"
+                android:textStyle="bold">
+
+            </TextView>
+            <ImageView
+                android:id="@+id/app_addIncome"
+                android:layout_width="200dp"
+                android:layout_gravity="center"
+                android:layout_height="400dp"
+                android:src="@drawable/app_add_income">
+
+            </ImageView>
+            <TextView
+                android:id="@+id/about_addincome"
+                android:layout_width="match_parent"
+                android:layout_height="300dp">
+
+            </TextView>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Transaction History Page"
+                android:textColor="#FFFFFF"
+                android:textAlignment="center"
+                android:background="@color/colorPrimaryDark"
+                android:textStyle="bold">
+
+            </TextView>
+            <ImageView
+                android:id="@+id/app_transactionHistory"
+                android:layout_width="200dp"
+                android:layout_gravity="center"
+                android:layout_height="400dp"
+                android:src="@drawable/app_transaction_history">
+
+            </ImageView>
+            <TextView
+                android:id="@+id/about_transactionhistory"
+                android:layout_width="match_parent"
+                android:layout_height="300dp">
+
+            </TextView>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Threshold Page"
+                android:textColor="#FFFFFF"
+                android:textAlignment="center"
+                android:background="@color/colorPrimaryDark"
+                android:textStyle="bold">
+
+            </TextView>
+            <ImageView
+                android:id="@+id/app_threshold"
+                android:layout_width="200dp"
+                android:layout_gravity="center"
+                android:layout_height="400dp"
+                android:src="@drawable/app_add_threshold">
+
+            </ImageView>
+            <TextView
+                android:id="@+id/about_threshold"
+                android:layout_width="match_parent"
+                android:layout_height="300dp">
+
+            </TextView>
+
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Statistics Page"
+                android:textColor="#FFFFFF"
+                android:textAlignment="center"
+                android:background="@color/colorPrimaryDark"
+                android:textStyle="bold">
+
+            </TextView>
+            <ImageView
+                android:id="@+id/app_statistics"
+                android:layout_width="200dp"
+                android:layout_gravity="center"
+                android:layout_height="400dp"
+                android:src="@drawable/app_statistics">
+
+            </ImageView>
+            <TextView
+                android:id="@+id/about_statistics"
+                android:layout_width="match_parent"
+                android:layout_height="300dp">
+
+            </TextView>
+
+
+        </LinearLayout>
+
+
+
+
+
+    </LinearLayout>
+
+
+
+</ScrollView>
