@@ -46,8 +46,6 @@ public class Login extends AppCompatActivity {
         String userName = editUsername.getText().toString();
         String password = editPassword.getText().toString();
 
-//        startActivity(new Intent(getApplicationContext(), MainActivity.class));
-
         if(!userName.isEmpty() && !password.isEmpty()){
             verifyUserCredentials(view, userName, password);
         } else {

@@ -106,8 +106,7 @@
     <string name="about_transactionhistory"> Transaction history page has various functionality. It can be used to view the transaction history through various filters like category, payment type and date. It can also be used to update or delete the transaction by selecting that particular transaction</string>
     <string name="about_statistics"> Statistics page is used to view the total expenses done in a month or year for each category , by selecting the respective filters</string>
     <string name="about_threshold"> Add threshold page is used for maintaining budget for each category by setting up a threshold value for the respective category</string>
-
-
+    <string name="logout">Logout</string>
 
 
 </resources>
