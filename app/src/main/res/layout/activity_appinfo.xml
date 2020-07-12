@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app__background_v1"
+    android:background="@drawable/new_background"
     android:visibility="visible"
     tools:context=".MainActivity">
 
@@ -12,6 +12,7 @@
         android:id="@+id/next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="#052A98"
         android:layout_marginLeft="320dp"
         android:text="Next" />
 
@@ -19,18 +20,21 @@
         android:id="@+id/previous"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="#052A98"
         android:text="Previous"
         android:visibility="invisible" />
 
     <androidx.viewpager.widget.ViewPager
         android:layout_width="match_parent"
         android:id="@+id/slideViewPager"
+        android:backgroundTint="#052A98"
         android:layout_height="match_parent">
 
     </androidx.viewpager.widget.ViewPager>
     <LinearLayout
         android:id="@+id/dotlayout"
         android:layout_width="match_parent"
+        android:backgroundTint="#052A98"
         android:layout_height="99dp"
         android:layout_alignParentBottom="true"
         android:gravity="center"

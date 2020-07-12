@@ -39,7 +39,10 @@
             <TextView
                 android:id="@+id/about_home"
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
+                android:layout_height="140dp"
+                android:textStyle="italic"
+                android:textSize="20sp"
+                android:text="This is the home fragment where the user can get an overlook of his account. It will display the total income, total expense and the remaining balance of the user.">
             </TextView>
 
 
@@ -73,7 +76,10 @@
             <TextView
                 android:id="@+id/about_sidenavigation"
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
+                android:layout_height="150dp"
+                android:textStyle="italic"
+                android:textSize="20sp"
+                android:text="The side navigation pane gives a overall view of the app. The user can select any of the options available depending on their requirement.">
 
             </TextView>
 
@@ -107,7 +113,10 @@
             <TextView
                 android:id="@+id/about_addexpense"
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
+                android:layout_height="150dp"
+                android:textStyle="italic"
+                android:textSize="20sp"
+                android:text=" In the Add expense page, all the fields are mandatory except the recurring transaction button and the notes. Here, the user should enter all the mandatory details and click on add expense to add a transaction">
 
             </TextView>
 
@@ -142,7 +151,10 @@
             <TextView
                 android:id="@+id/about_addincome"
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
+                android:layout_height="200dp"
+                android:textStyle="italic"
+                android:textSize="20sp"
+                android:text="In the Add income page, user needs to enter all the details related to their source of income. Once entered the amount and the  notes , user should click on Add income to add it into the total income.">
 
             </TextView>
 
@@ -176,7 +188,10 @@
             <TextView
                 android:id="@+id/about_transactionhistory"
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
+                android:layout_height="180dp"
+                android:textStyle="italic"
+                android:textSize="20sp"
+                android:text=" Transaction history page has various functionality. It can be used to view the transaction history through various filters like category, payment type and date. It can also be used to update or delete the transaction by selecting that particular transaction.">
 
             </TextView>
 
@@ -210,7 +225,10 @@
             <TextView
                 android:id="@+id/about_threshold"
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
+                android:layout_height="150dp"
+                android:textStyle="italic"
+                android:textSize="20sp"
+                android:text="Add threshold page is used for maintaining budget for each category by setting up a threshold value for the respective category.">
 
             </TextView>
 
@@ -245,7 +263,22 @@
             <TextView
                 android:id="@+id/about_statistics"
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
+                android:layout_height="150dp"
+                android:textStyle="italic"
+                android:textSize="20sp"
+                android:text="Statistics page is used to view the total expenses done in a month or year for each category , by selecting the respective filters.">
+
+            </TextView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="    Thank you..!! "
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:fontFamily="cursive">
+
 
             </TextView>
 

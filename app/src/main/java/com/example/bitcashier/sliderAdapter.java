@@ -27,11 +27,11 @@ public class sliderAdapter extends PagerAdapter {
     };
     public String[] slide_heading={
             "BitCashier - by BitCoders!",
-            "HOME",
-            "EXPENSES",
-            "RECURRING EXPENSES",
-            "CURRENCIES",
-            "THRESHOLD"
+            "Home",
+            "Expenses",
+            "Recurring Expenses",
+            "Currencies",
+            "Threshold"
     };
     public String[] slide_desc={
             "A simple budget tracker to view and manage all your expenses. Be careful not to overspend!",
